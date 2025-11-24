@@ -1,6 +1,6 @@
 AUTHOR = 'Aziz Kurbanov'
 SITENAME = 'Platform R&D'
-SITEURL = 'https://platformrnd.com'
+SITEURL = 'https://sqe.github.io/platformrnd'
 
 PATH = 'content'
 
