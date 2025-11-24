@@ -3,19 +3,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform R&D - Tags</title>
+    <title>Platform Research And Development - Tags</title>
     <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
     <link rel="canonical" href="https://platformrnd.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://platformrnd.com/style.css">
-    <link rel="alternate" type="application/atom+xml" title="Platform R&D Atom Feed" href="feeds/all.atom.xml">
+    <link rel="alternate" type="application/atom+xml" title="Platform Research And Development Atom Feed" href="feeds/all.atom.xml">
 </head>
 <body>
     <div class="container">
         <nav>
-            <div class="logo">Platform R&D</div>
+            <div class="logo">Platform Research And Development</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/articles.html">Articles</a></li>
@@ -24,7 +24,7 @@
             </ul>
         </nav>
 
-    <h2>Tags for Platform R&D</h2>
+    <h2>Tags for Platform Research And Development</h2>
     <ul>
             <li><a href="https://platformrnd.com/tag/argo.html">argo</a> (1)</li>
             <li><a href="https://platformrnd.com/tag/cloud.html">cloud</a> (1)</li>
@@ -54,11 +54,13 @@
         const themeToggle = document.getElementById('themeToggle');
         const htmlElement = document.documentElement;
         
-        // Check for saved preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
+        // Check for saved preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
         if (currentTheme === 'dark') {
             document.body.classList.add('dark-mode');
             themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
         }
         
         themeToggle.addEventListener('click', () => {
