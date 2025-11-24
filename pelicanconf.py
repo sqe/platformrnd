@@ -9,8 +9,8 @@ DEFAULT_LANG = 'en'
 
 # Blog settings
 DEFAULT_CATEGORY = 'Open Source Projects'
-ARTICLE_URL = '{slug}.html'
-ARTICLE_SAVE_AS = '{slug}.html'
+ARTICLE_URL = 'blog/{slug}.html'
+ARTICLE_SAVE_AS = 'blog/{slug}.html'
 
 # Static files, custom pages
 STATIC_PATHS = ['images', 'extra/CNAME']
@@ -29,4 +29,4 @@ DISPLAY_PAGES_ON_MENU = True
 DISPLAY_CATEGORIES_ON_MENU = False
 
 # Index page
-INDEX_SAVE_AS = 'blog.html'
+INDEX_SAVE_AS = 'index.html'
