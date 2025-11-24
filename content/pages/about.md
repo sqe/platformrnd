@@ -102,14 +102,18 @@ Physics-based framework applying classical mechanics principles (Hamiltonian and
 
 ---
 
-## Leadership & Mentoring
+## Platform & SRE Leadership
 
-- **Head of Platform** (Element, 2020-2023) — Staffed and mentored engineering teams, established self-service platform strategies, drove company-wide Datadog adoption, led ISO 27001 certification
-- **Lead Test Engineer** (Element, 2017-2019) — Established QE processes and test infrastructure, architected E2E automation frameworks, built offshore staffing partnerships
-- **Head of Quality Engineering** (Element, 2019-2020) — Reduced MTTR from 6-8 weeks to 2 days, co-architected Docker Compose → AKS migration
-- Established and oversaw Software Engineering internship programs at multiple organizations
-- Hired and managed teams of quality, automation, and software engineers
-- Mentored teams on testing, automation, and infrastructure best practices
+As a platform architect and SRE systems leader, I've consistently championed infrastructure excellence and engineering velocity. My leadership philosophy centers on building self-service platform ecosystems that empower teams—eliminating toil, automating lifecycle operations, and establishing infrastructure as the foundation for organizational scaling.
+
+Key infrastructure initiatives include:
+- Architected self-service platform strategies enabling product teams to move independently with centralized infrastructure guardrails
+- Built and maintained high-reliability infrastructure across multi-cloud environments (AWS, Azure, GCP)
+- Established comprehensive observability, security, and compliance standards across organizations
+- Drove GitOps and Infrastructure-as-Code adoption company-wide, enabling reproducible, auditable deployments
+- Led ISO 27001 certification and AWS Partner review initiatives
+- Mentored platform, infrastructure, and systems engineering teams across cloud-native and distributed systems domains
+- Engineered automated provisioning, scaling, and decommissioning workflows eliminating manual operations overhead
 
 ---
 
@@ -127,7 +131,6 @@ Physics-based framework applying classical mechanics principles (Hamiltonian and
 - **Email**: azizbek@gmail.com
 - **GitHub**: [github.com/sqe](https://github.com/sqe)
 - **Location**: Portland Oregon Metro Area (Remote)
-- **Phone**: 415-317-1374
 
 ---
 
