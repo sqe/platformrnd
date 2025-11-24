@@ -32,7 +32,6 @@ PLUGINS = []
 DISPLAY_PAGES_ON_MENU = True
 DISPLAY_CATEGORIES_ON_MENU = False
 
-# Index pages
-INDEX_SAVE_AS = 'articles.html'
+# Disable extra index pages
 AUTHOR_SAVE_AS = False
 CATEGORY_SAVE_AS = False
