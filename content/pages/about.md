@@ -28,6 +28,9 @@ Engineered production-grade infrastructure for containerized robotics applicatio
 ### Kubernetes & Container Orchestration
 Expert in designing, scaling, and operating production Kubernetes clusters across AWS (EKS), Azure (AKS), and GCP (GKE). Deep expertise in ArgoCD, Flux CD, Helm, Argo Workflows, multi-tenancy patterns, namespace isolation, and cost optimization. Proficient in Kubernetes operators (kopf-based), custom resource definitions, and RBAC security models.
 
+### Bare Metal & Edge Infrastructure
+Architect of bare-metal Kubernetes clusters using microk8s and kind with automated provisioning and lifecycle management. Implemented MetalLB for load balancing on bare-metal environments, enabling production-grade service exposure. Expert in KubeEdge for edge computing at the network periphery, supporting distributed and hybrid cloud/edge deployments with real-time data processing capabilities.
+
 ### Infrastructure as Code & GitOps
 Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines. Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.
 
@@ -121,7 +124,7 @@ Key infrastructure initiatives include:
 
 - AWS Partner badge (AWS Foundational Technical Review)
 - ISO 27001 certification leadership
-- Multiple Hackweek project winners (GitOps Flux integration, Test Automation Pods, CLI tooling)
+- Multiple Hackweek project winners: Agentic AI Platform on Kubernetes, Enterprise CLI tooling, GitOps automation (Flux, ArgoCD)
 - Led successful platform ecosystem initiatives enabling product teams to accelerate time-to-market
 
 ---
