@@ -120,12 +120,13 @@ Key infrastructure initiatives include:
 
 ---
 
-## Recognition
+## Recognition & Major Initiatives
 
 - AWS Partner badge (AWS Foundational Technical Review)
 - ISO 27001 certification leadership
+- Multi-cloud infrastructure migrations: Led EKS-to-AKS migrations across thousands of Kubernetes clusters; architected IaC for GCP MLOps infrastructure using Cloud Build, Cloud Run, and GKE with GPU inference
 - Multiple Hackweek project winners: Agentic AI Platform on Kubernetes, Enterprise CLI tooling, GitOps automation (Flux, ArgoCD)
-- Led successful platform ecosystem initiatives enabling product teams to accelerate time-to-market
+- Platform ecosystem initiatives: Established self-service strategies enabling product teams to accelerate time-to-market while maintaining security and compliance standards
 
 ---
 
