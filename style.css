@@ -168,12 +168,13 @@ nav a:hover::after {
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 700;
   line-height: 1.1;
   margin-bottom: 0.75rem;
   color: var(--text-primary);
   letter-spacing: -2px;
+  white-space: nowrap;
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-tertiary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
