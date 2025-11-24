@@ -35,7 +35,15 @@
 <h2>Professional Highlights</h2>
 <h3>Agentic AI &amp; MLOps Systems</h3>
 <ul>
-<li>Architected and delivered an MLOps-driven agentic quality engineering platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled code generation. </li>
+<li>Architected, created, and productionized Agentic AI systems integrated with Kubernetes and ArgoCD. </li>
+<li>Encompassed designing Multi-Agent Architectures, deploying GPU-accelerated LLMs, and managing Qdrant/Redis memory. </li>
+<li>Implemented Apache Kafka for agent communication and orchestrated complex workflows with Argo Workflows, optimizing performance. </li>
+<li>
+<p>Ensured robust security with RBAC, established Prometheus monitoring, and led automated Canary and Blue-Green deployments with agent state migration.</p>
+</li>
+<li>
+<p>Additionally, architected and delivered an MLOps-driven agentic quality engineering platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled test generation.</p>
+</li>
 <li>Engineered robust infrastructure integrating PostgreSQL, MinIO, Qdrant, Redis, and Kafka for scalable MLOps workflows, persistent artifact storage, semantic search, and real-time agent orchestration.</li>
 </ul>
 <h3>Distributed Robotics &amp; Edge Computing</h3>
@@ -47,9 +55,11 @@
 <h3>Cloud Infrastructure &amp; Platform Engineering</h3>
 <ul>
 <li>Architected and led migration of thousands of Kubernetes clusters (EKS to AKS) using Terraform, GitOps, and Velero</li>
+<li>Managed high-volume workloads exceeding 10 petabytes in traffic; optimized infrastructure using AWS Graviton instances for energy efficiency and cost savings while maintaining performance SLAs</li>
 <li>Automated provisioning and decommissioning of thousands of self-hosted MySQL servers to Azure Database for MySQL via IaC</li>
 <li>Designed comprehensive Datadog and Grafana monitoring solutions with custom dashboards, SLO tracking, and real-time alerting</li>
-<li>Built DNS record management CLI utilities for Cloudflare and AWS Route53, automating customer onboarding/offboarding</li>
+<li>Built DNS record management CLI utilities for Cloudflare and AWS Route53, including Dynamic DNS, automating customer onboarding/offboarding</li>
+<li>Expertise in VPC/subnet architecture, load balancing strategies, VPN configurations, and network segmentation across cloud providers</li>
 <li>Implemented Just-In-Time Access to Azure MySQL infrastructure using Britive, reducing access overhead by 40%+</li>
 </ul>
 <h3>Kubernetes &amp; Container Orchestration</h3>
@@ -59,27 +69,31 @@
 </ul>
 <h3>Bare Metal &amp; Edge Infrastructure</h3>
 <ul>
-<li>Architect of bare-metal Kubernetes clusters using microk8s and kind with automated provisioning and lifecycle management. Implemented MetalLB for load balancing on bare-metal environments, enabling production-grade service exposure. </li>
+<li>Architect of bare-metal Kubernetes clusters using microk8s and kind with automated provisioning and lifecycle management. </li>
+<li>Implemented MetalLB and advanced load balancing solutions for bare-metal environments, enabling production-grade service exposure. </li>
+<li>Deep expertise in OSI model, BGP routing, L2/L3 networking, and network protocols enabling seamless inter-cluster communication. </li>
 <li>Expert in KubeEdge for edge computing at the network periphery, supporting distributed and hybrid cloud/edge deployments with real-time data processing capabilities.</li>
 </ul>
 <h3>Infrastructure as Code &amp; GitOps</h3>
 <ul>
-<li>Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines. </li>
-<li>Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.</li>
+<li>Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines following 12 Factor Manifesto principles. </li>
+<li>Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. </li>
+<li>Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.</li>
 </ul>
 <h3>Observability &amp; Monitoring</h3>
 <ul>
 <li>Built comprehensive observability platforms across Datadog, Prometheus, Grafana, and ELK Stack. </li>
-<li>Expertise in distributed tracing, SLO/SLA dashboards, synthetic transaction monitoring, real user monitoring (RUM), and proactive alerting. Established monitoring standards and runbooks elevating operational maturity.</li>
+<li>Expertise in distributed tracing, SLO/SLA dashboards, synthetic transaction monitoring, real user monitoring (RUM), and proactive alerting. </li>
+<li>Established monitoring standards and runbooks elevating operational maturity.</li>
 </ul>
 <h3>AI/GPU Infrastructure</h3>
 <ul>
-<li>GPU acceleration, CUDA, MIG (Multi-Instance GPU) configurations</li>
-<li>LLM deployments (HuggingFace, TensorFlow, PyTorch)</li>
-<li>RAG systems with vector databases (Qdrant, pgvector)</li>
-<li>Agentic system orchestration and A2A (Agent-to-Agent) workflows</li>
-<li>SageMaker, Conversational AI, Pre-trained model containerization</li>
-<li>ML/AI compute workload optimization (Vercel → AWS ECS Fargate)</li>
+<li>GPU acceleration, CUDA, MIG (Multi-Instance GPU) configurations with production experience managing 500+ GPU nodes (8x H100s per node) in large-scale inference clusters</li>
+<li>LLM deployments (HuggingFace, TensorFlow, PyTorch, LM Studio) supporting Text, Audio, and Visual modalities with optimized KV cache management for throughput maximization</li>
+<li>RAG systems with vector databases (Qdrant, pgvector) and KV optimization for inference performance and memory efficiency</li>
+<li>Agentic system orchestration and A2A (Agent-to-Agent) workflows with persistence layers and state management across distributed GPU infrastructure</li>
+<li>SageMaker, Conversational AI, Pre-trained model containerization, and advanced inference optimization techniques (quantization, batching, dynamic scheduling)</li>
+<li>ML/AI compute workload optimization (Vercel → AWS ECS Fargate) and distributed inference scaling across multi-node GPU clusters</li>
 </ul>
 <h3>Security &amp; Compliance</h3>
 <ul>
@@ -101,7 +115,7 @@
 <h3>Infrastructure as Code</h3>
 <p>Terraform, Ansible, GitHub Actions, GitOps,  Everything-as-Code</p>
 <h3>Databases &amp; Data</h3>
-<p>PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO, Qdrant, Pinecone, Redshift, BigQuery, Parquet</p>
+<p>PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO (object store), Qdrant, Pinecone, Redshift, BigQuery, Parquet, persistence layer optimization, KV stores</p>
 <h3>AI/MLOps &amp; LLMs</h3>
 <p>GPU acceleration, CUDA, LLMs, SLMs, RAG, AI Agents, SageMaker, HuggingFace, TensorFlow, PyTorch, Slurm, vLLM, Kubeflow, Metaflow, Custom Artifact versioning tooling</p>
 <h3>Observability</h3>
@@ -109,7 +123,7 @@
 <h3>Security &amp; Compliance</h3>
 <p>Lacework, OWASP ZAP, Keycloak, OIDC/SAML, Britive, IAM/RBAC, DevSecOps, ISO 27001, Soc 2</p>
 <h3>Languages &amp; Tools</h3>
-<p>Python, Django, Flask, Bash, Git, Docker, Selenium, Appium, JMETER, ROS2, FastDDS, Wireshark, TCP/IP, HTTP/MQTT</p>
+<p>Linux, Python, Django, Flask, Bash, Git, Docker, Terraform, Ansible, Selenium, Appium, JMETER, ROS2, FastDDS, Wireshark, TCP/IP, HTTP/MQTT</p>
 <hr>
 <h2>Open Source Projects</h2>
 <h3>robotics-k8s-infra</h3>
