@@ -110,6 +110,7 @@ Physics-based framework applying classical mechanics principles (Hamiltonian and
 As a platform architect and SRE systems leader, I've consistently championed infrastructure excellence and engineering velocity. My leadership philosophy centers on building self-service platform ecosystems that empower teams—eliminating toil, automating lifecycle operations, and establishing infrastructure as the foundation for organizational scaling.
 
 Key infrastructure initiatives include:
+
 - Architected self-service platform strategies enabling product teams to move independently with centralized infrastructure guardrails
 - Built and maintained high-reliability infrastructure across multi-cloud environments (AWS, Azure, GCP)
 - Established comprehensive observability, security, and compliance standards across organizations
