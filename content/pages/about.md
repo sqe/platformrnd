@@ -1,12 +1,13 @@
-Title: About Me
-Date: 2025-11-01
+Title: About
+Date: November 2025
 Slug: about
 
 ## Aziz Kurbanov
 
 **Principal Platform Architect & Open Source Author**
 
-Specialized expertise in production-grade platform engineering, MLOps systems, AI infrastructure, distributed robotics, and enterprise cloud-native solutions. Proven track record architecting and delivering mission-critical infrastructure at scale, leading high-performing teams, and building self-service platform ecosystems that accelerate engineering velocity.
+- Specialized expertise in production-grade platform engineering, MLOps systems, AI infrastructure, distributed robotics, and enterprise cloud-native solutions. 
+- Proven track record architecting and delivering mission-critical infrastructure at scale, leading high-performing teams, and building self-service platform ecosystems that accelerate engineering velocity.
 
 ---
 
@@ -14,11 +15,14 @@ Specialized expertise in production-grade platform engineering, MLOps systems, A
 
 ### Agentic AI & MLOps Systems
 
-Architected and delivered an MLOps-driven agentic quality engineering platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled test generation. Engineered robust infrastructure integrating PostgreSQL, MinIO, Qdrant, Redis, and Kafka for scalable MLOps workflows, persistent artifact storage, semantic search, and real-time agent orchestration.
+- Architected and delivered an MLOps-driven agentic quality engineering platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled code generation. 
+- Engineered robust infrastructure integrating PostgreSQL, MinIO, Qdrant, Redis, and Kafka for scalable MLOps workflows, persistent artifact storage, semantic search, and real-time agent orchestration.
 
 ### Distributed Robotics & Edge Computing
 
-Engineered production-grade infrastructure for containerized robotics applications on Kubernetes, featuring KubeEdge, ROS2, and multi-domain DDS networking. Designed eBPF-based datapaths with Cilium CNI enabling seamless ROS2 FastDDS interoperability for UDP multicast discovery. Built CLI tooling for dynamic edge node management, automated ROS2 deployment, and real-time resource monitoring.
+- Engineered production-grade infrastructure for containerized robotics applications on Kubernetes, featuring KubeEdge, ROS2, and multi-domain DDS networking. 
+- Designed eBPF-based datapaths with Cilium CNI enabling seamless ROS2 FastDDS interoperability for UDP multicast discovery. 
+- Built CLI tooling for dynamic edge node management, automated ROS2 deployment, and real-time resource monitoring.
 
 ### Cloud Infrastructure & Platform Engineering
 
@@ -30,19 +34,23 @@ Engineered production-grade infrastructure for containerized robotics applicatio
 
 ### Kubernetes & Container Orchestration
 
-Expert in designing, scaling, and operating production Kubernetes clusters across AWS (EKS), Azure (AKS), and GCP (GKE). Deep expertise in ArgoCD, Flux CD, Helm, Argo Workflows, multi-tenancy patterns, namespace isolation, and cost optimization. Proficient in Kubernetes operators (kopf-based), custom resource definitions, and RBAC security models.
+- Expert in designing, scaling, and operating production Kubernetes clusters across AWS (EKS), Azure (AKS), and GCP (GKE). Deep expertise in ArgoCD, Flux CD, Helm, Argo Workflows, multi-tenancy patterns, namespace isolation, and cost optimization. 
+- Proficient in Kubernetes operators (kopf-based), custom resource definitions, and RBAC security models.
 
 ### Bare Metal & Edge Infrastructure
 
-Architect of bare-metal Kubernetes clusters using microk8s and kind with automated provisioning and lifecycle management. Implemented MetalLB for load balancing on bare-metal environments, enabling production-grade service exposure. Expert in KubeEdge for edge computing at the network periphery, supporting distributed and hybrid cloud/edge deployments with real-time data processing capabilities.
+- Architect of bare-metal Kubernetes clusters using microk8s and kind with automated provisioning and lifecycle management. Implemented MetalLB for load balancing on bare-metal environments, enabling production-grade service exposure. 
+- Expert in KubeEdge for edge computing at the network periphery, supporting distributed and hybrid cloud/edge deployments with real-time data processing capabilities.
 
 ### Infrastructure as Code & GitOps
 
-Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines. Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.
+- Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines. 
+- Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.
 
 ### Observability & Monitoring
 
-Built comprehensive observability platforms across Datadog, Prometheus, Grafana, and ELK Stack. Expertise in distributed tracing, SLO/SLA dashboards, synthetic transaction monitoring, real user monitoring (RUM), and proactive alerting. Established monitoring standards and runbooks elevating operational maturity.
+- Built comprehensive observability platforms across Datadog, Prometheus, Grafana, and ELK Stack. 
+- Expertise in distributed tracing, SLO/SLA dashboards, synthetic transaction monitoring, real user monitoring (RUM), and proactive alerting. Established monitoring standards and runbooks elevating operational maturity.
 
 ### AI/GPU Infrastructure
 
@@ -77,19 +85,19 @@ AWS (EKS, EC2, Lambda, ECS Fargate, Aurora, RDS, S3, Route53), Azure (AKS, Datab
 Kubernetes, Helm, ArgoCD, Argo Workflows, Flux CD, KubeEdge, kopf-based operators, Istio, Cilium CNI
 
 ### Infrastructure as Code
-Terraform, Ansible, GitHub Actions, GitOps, Velero, Everything-as-Code
+Terraform, Ansible, GitHub Actions, GitOps,  Everything-as-Code
 
 ### Databases & Data
-PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO, Qdrant, Redshift, BigQuery, Parquet
+PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO, Qdrant, Pinecone, Redshift, BigQuery, Parquet
 
 ### AI/MLOps & LLMs
-GPU acceleration, CUDA, LLMs, SLMs, RAG, AI Agents, SageMaker, HuggingFace, TensorFlow, PyTorch, Playwright
+GPU acceleration, CUDA, LLMs, SLMs, RAG, AI Agents, SageMaker, HuggingFace, TensorFlow, PyTorch, Slurm, vLLM, Kubeflow, Metaflow, Custom Artifact versioning tooling
 
 ### Observability
 Datadog, Prometheus, Grafana, ELK Stack, Netdata, distributed tracing, SLO/SLA monitoring
 
 ### Security & Compliance
-Lacework, OWASP ZAP, Keycloak, OIDC/SAML, Britive, IAM/RBAC, DevSecOps, ISO 27001
+Lacework, OWASP ZAP, Keycloak, OIDC/SAML, Britive, IAM/RBAC, DevSecOps, ISO 27001, Soc 2
 
 ### Languages & Tools
 Python, Django, Flask, Bash, Git, Docker, Selenium, Appium, JMETER, ROS2, FastDDS, Wireshark, TCP/IP, HTTP/MQTT
