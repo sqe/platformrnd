@@ -95,6 +95,13 @@ nav {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -1px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.8;
 }
 
 nav ul {
