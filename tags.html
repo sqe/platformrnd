@@ -20,6 +20,7 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/articles.html">Articles</a></li>
                 <li><a href="/about.html">About</a></li>
+                <li><button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button></li>
             </ul>
         </nav>
 
@@ -49,5 +50,23 @@
             <p>Platform R&D • <a href="https://github.com/sqe">GitHub</a></p>
         </footer>
     </div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        });
+    </script>
 </body>
 </html>
