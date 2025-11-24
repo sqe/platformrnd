@@ -65,6 +65,12 @@ a:hover {
   padding: 0.5rem;
   transition: all 0.3s ease;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 1.5rem;
+  width: 1.5rem;
 }
 
 .theme-toggle:hover {
@@ -118,10 +124,15 @@ nav a::after {
 
 nav a:hover {
   color: var(--accent);
+  background-color: var(--accent);
+  color: #000;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  margin: 0 -0.75rem;
 }
 
 nav a:hover::after {
-  width: 100%;
+  width: 0%;
 }
 
 /* Container */
@@ -285,8 +296,11 @@ body.dark-mode .tag {
 }
 
 .project-link:hover {
-  border-bottom-color: var(--accent);
-  transform: translateX(4px);
+  background-color: var(--accent);
+  color: #000;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transform: translateX(0);
 }
 
 /* Expertise Section */

@@ -1,5 +1,5 @@
 AUTHOR = 'Aziz Kurbanov'
-SITENAME = 'Platform R&D'
+SITENAME = 'Platform Research And Development'
 SITEURL = 'https://platformrnd.com'
 
 PATH = 'content'
