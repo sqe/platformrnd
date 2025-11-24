@@ -12,6 +12,10 @@ DEFAULT_CATEGORY = 'Open Source Projects'
 ARTICLE_URL = 'blog/{slug}.html'
 ARTICLE_SAVE_AS = 'blog/{slug}.html'
 
+# Pages
+PAGE_URL = '{slug}.html'
+PAGE_SAVE_AS = '{slug}.html'
+
 # Static files, custom pages
 STATIC_PATHS = ['images', 'style.css', 'extra/CNAME']
 EXTRA_PATH_METADATA = {
@@ -28,5 +32,7 @@ PLUGINS = []
 DISPLAY_PAGES_ON_MENU = True
 DISPLAY_CATEGORIES_ON_MENU = False
 
-# Index page
-INDEX_SAVE_AS = 'index.html'
+# Index pages
+INDEX_SAVE_AS = 'articles.html'
+AUTHOR_SAVE_AS = False
+CATEGORY_SAVE_AS = False
