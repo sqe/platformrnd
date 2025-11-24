@@ -6,7 +6,10 @@
     <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
     <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
     <link rel="canonical" href="{{ SITEURL }}">
-    <link rel="stylesheet" href="{{ SITEURL }}/theme/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/static/style.css">
     {% if FEED_ALL_ATOM %}
     <link rel="alternate" type="application/atom+xml" title="{{ SITENAME }} Atom Feed" href="{{ FEED_ALL_ATOM }}">
     {% endif %}
@@ -17,9 +20,9 @@
         <nav>
             <div class="logo">{{ SITENAME }}</div>
             <ul>
-                <li><a href="{{ SITEURL }}/index.html">Home</a></li>
-                <li><a href="{{ SITEURL }}/blog.html">Articles</a></li>
-                <li><a href="{{ SITEURL }}/about.html">About</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog.html">Articles</a></li>
+                <li><a href="/pages/about.html">About</a></li>
             </ul>
         </nav>
         {% endblock %}
