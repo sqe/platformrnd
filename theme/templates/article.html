@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<article class="page-content">
+    <h1>{{ article.title }}</h1>
+    <div class="post-meta">
+        <span>{{ article.date.strftime('%B %d, %Y') }}</span>
+        {% if article.category %}<span> • {{ article.category }}</span>{% endif %}
+    </div>
+    <div class="post-excerpt" style="margin: 2rem 0; border-bottom: 1px solid #f0f0f0; padding-bottom: 2rem;">
+    </div>
+    {{ article.content }}
+    {% if article.tags %}
+    <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
+        {% for tag in article.tags %}
+        <span class="tag">{{ tag }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+</article>
+<div style="margin-top: 3rem; text-align: center;">
+    <a href="{{ SITEURL }}/blog.html">← Back to Articles</a>
+</div>
+{% endblock %}

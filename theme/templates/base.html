@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ DEFAULT_LANG }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+    <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
+    <link rel="canonical" href="{{ SITEURL }}">
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/static/style.css">
+    {% if FEED_ALL_ATOM %}
+    <link rel="alternate" type="application/atom+xml" title="{{ SITENAME }} Atom Feed" href="{{ FEED_ALL_ATOM }}">
+    {% endif %}
+</head>
+<body>
+    <div class="container">
+        {% block header %}
+        <nav>
+            <div class="logo">{{ SITENAME }}</div>
+            <ul>
+                <li><a href="{{ SITEURL }}/index.html">Home</a></li>
+                <li><a href="{{ SITEURL }}/blog.html">Articles</a></li>
+                <li><a href="{{ SITEURL }}/about.html">About</a></li>
+            </ul>
+        </nav>
+        {% endblock %}
+
+        {% block content %}
+        {% endblock %}
+
+        {% block footer %}
+        <footer>
+            <p>&copy; 2025 {{ AUTHOR }}. All rights reserved.</p>
+            <p>Platform R&D • <a href="https://github.com/sqe">GitHub</a></p>
+        </footer>
+        {% endblock %}
+    </div>
+</body>
+</html>

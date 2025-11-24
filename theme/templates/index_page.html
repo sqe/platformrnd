@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <h1>Articles</h1>
+    
+    <div class="posts-list">
+        {% for article in articles %}
+        <div class="post-item">
+            <h2 class="post-title"><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+            <div class="post-meta">{{ article.date.strftime('%B %d, %Y') }}</div>
+            <div class="post-excerpt">{{ article.summary }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
