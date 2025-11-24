@@ -229,6 +229,56 @@ nav a:hover::after {
   transform: translateX(4px);
 }
 
+/* Expertise Section */
+.expertise {
+  margin: 8rem 0;
+  padding: 4rem 0;
+}
+
+.expertise h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  text-align: center;
+  color: #0f1419;
+  letter-spacing: -1px;
+}
+
+.expertise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.expertise-category {
+  padding: 2rem;
+  border: 1px solid rgba(0, 102, 204, 0.1);
+  border-radius: 8px;
+  background: white;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.expertise-category:hover {
+  border-color: #0066cc;
+  box-shadow: 0 12px 24px rgba(0, 102, 204, 0.12);
+  transform: translateY(-4px);
+}
+
+.expertise-category h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #0066cc;
+  font-weight: 700;
+}
+
+.expertise-category p {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
 /* About Section */
 .about {
   margin: 6rem 0;
