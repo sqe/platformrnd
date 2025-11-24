@@ -33,7 +33,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   padding: 2rem 0;
-  margin-bottom: 4rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -90,7 +90,7 @@ nav a:hover::after {
 /* Hero Section */
 .hero {
   text-align: center;
-  padding: 6rem 0 8rem;
+  padding: 2rem 0 2rem;
   animation: fadeIn 0.6s ease-out;
 }
 
@@ -109,7 +109,7 @@ nav a:hover::after {
   font-size: 3.5rem;
   font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
   color: #0f1419;
   letter-spacing: -2px;
   background: linear-gradient(135deg, #0f1419 0%, #555 100%);
@@ -121,7 +121,7 @@ nav a:hover::after {
 .hero p {
   font-size: 1.25rem;
   color: #666;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -150,14 +150,14 @@ nav a:hover::after {
 
 /* Projects Grid */
 .projects {
-  margin: 8rem 0;
-  padding: 4rem 0;
+  margin: 2rem 0 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .projects h2 {
   font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   text-align: center;
   color: #0f1419;
   letter-spacing: -1px;
@@ -166,11 +166,11 @@ nav a:hover::after {
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .project-card {
-  padding: 2rem;
+  padding: 1.75rem;
   border: 1px solid rgba(0, 102, 204, 0.1);
   border-radius: 8px;
   background: white;
@@ -231,14 +231,14 @@ nav a:hover::after {
 
 /* Expertise Section */
 .expertise {
-  margin: 8rem 0;
-  padding: 4rem 0;
+  margin: 2rem 0 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .expertise h2 {
   font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   text-align: center;
   color: #0f1419;
   letter-spacing: -1px;
@@ -247,12 +247,12 @@ nav a:hover::after {
 .expertise-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .expertise-category {
-  padding: 2rem;
+  padding: 1.75rem;
   border: 1px solid rgba(0, 102, 204, 0.1);
   border-radius: 8px;
   background: white;
@@ -281,8 +281,8 @@ nav a:hover::after {
 
 /* About Section */
 .about {
-  margin: 6rem 0;
-  padding: 4rem;
+  margin: 2rem 0 1rem 0;
+  padding: 2.5rem;
   background: linear-gradient(135deg, #f8f9fa 0%, rgba(0, 102, 204, 0.03) 100%);
   border-radius: 8px;
   border: 1px solid rgba(0, 102, 204, 0.1);
@@ -310,8 +310,8 @@ nav a:hover::after {
 /* Footer */
 footer {
   text-align: center;
-  padding: 3rem 0;
-  margin-top: 6rem;
+  padding: 2rem 0;
+  margin-top: 3rem;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   color: #999;
   font-size: 0.9rem;
