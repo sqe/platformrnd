@@ -13,9 +13,10 @@ ARTICLE_URL = 'blog/{slug}.html'
 ARTICLE_SAVE_AS = 'blog/{slug}.html'
 
 # Static files, custom pages
-STATIC_PATHS = ['images', 'extra/CNAME']
+STATIC_PATHS = ['images', 'extra/static', 'extra/CNAME']
 EXTRA_PATH_METADATA = {
     'extra/CNAME': {'path': 'CNAME'},
+    'extra/static': {'path': 'static'},
 }
 
 # Theme
