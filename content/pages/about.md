@@ -41,7 +41,7 @@ Slug: about
 
 ### Kubernetes & Container Orchestration
 
-- Expert in designing, scaling, and operating production Kubernetes clusters across AWS (EKS), Azure (AKS), and GCP (GKE). Deep expertise in ArgoCD, Flux CD, Helm, Argo Workflows, multi-tenancy patterns, namespace isolation, and cost optimization. 
+- Expert in designing, scaling, and operating production Kubernetes clusters across AWS (EKS), Azure (AKS), and GCP (GKE). Deep expertise in ArgoCD, Flux CD, Helm, Kustomize, Argo Workflows, multi-tenancy patterns, namespace isolation, and cost optimization. 
 - Proficient in Kubernetes operators (kopf-based), custom resource definitions, and RBAC security models.
 
 ### Bare Metal & Edge Infrastructure
@@ -55,6 +55,7 @@ Slug: about
 
 - Champion of Everything-as-Code culture—Terraform, Ansible, GitHub Actions, CI/CD pipelines following 12 Factor Manifesto principles. 
 - Designed and implemented GitOps workflows enabling reproducible, auditable cluster provisioning and lifecycle operations. 
+- AWS Organizations automation and multi-account infrastructure governance with automated compliance frameworks
   - Reduced MTTR (Median Time To Release) by 98.96% through GitOps automation.
 
 ### Observability & Monitoring
@@ -74,11 +75,14 @@ Slug: about
 
 ### Security & Compliance
 
-- DevSecOps practices with automated OWASP ZAP dynamic testing
+- DevSecOps practices with automated OWASP ZAP dynamic testing and WAF (Web Application Firewall) deployment
+- VPN/Wireguard tunnel configuration and encrypted network segmentation across hybrid infrastructures
 - Lacework cloud security platform automation
 - Keycloak SSO integration with MFA (AWS IAM, Azure AD, Okta via OIDC/SAML)
 - Just-In-Time Access implementation and security policy enforcement
 - ISO 27001 certification leadership and recertification
+- SOC 2 Type II readiness and compliance architecture
+- NIST SP 800-53 control implementation and continuous monitoring
 - AWS Partner badge (AWS Foundational Technical Review)
 
 ### Test Automation & Quality Engineering
@@ -90,13 +94,13 @@ As first QA hire at multiple organizations, established QA processes, test infra
 ## Technology Stack
 
 ### Cloud Platforms
-AWS (EKS, EC2, Lambda, ECS Fargate, Aurora, RDS, S3, Route53), Azure (AKS, Database Services, Network Watcher, Log Analytics), GCP (GKE, Cloud Run, Cloud Build)
+AWS (EKS, EC2, Lambda, ECS Fargate, Aurora, RDS, S3, Route53, ECR, Organizations automation, Auto Scaling, CloudWatch), Azure (AKS, Database Services, Network Watcher, Log Analytics, Autoscaling), GCP (GKE, Cloud Run, Cloud Build, Autoscaling)
 
 ### Kubernetes & Orchestration
-Kubernetes, Helm, ArgoCD, Argo Workflows, Flux CD, KubeEdge, kopf-based operators, Istio, Cilium CNI
+Kubernetes, Helm, Kustomize, ArgoCD, Argo Workflows, Flux CD, KubeEdge, kopf-based operators, Istio, Cilium CNI
 
 ### Infrastructure as Code
-Terraform, Ansible, GitHub Actions, GitOps,  Everything-as-Code
+Terraform, Ansible, GitHub Actions, GitOps, Everything-as-Code
 
 ### Databases & Data
 PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO (object store), Qdrant, Pinecone, Redshift, BigQuery, Parquet, persistence layer optimization, KV stores
@@ -105,13 +109,13 @@ PostgreSQL (pgvector), MySQL, Redis, Kafka, RabbitMQ, MinIO (object store), Qdra
 GPU acceleration, CUDA, LLMs, SLMs, RAG, AI Agents, SageMaker, HuggingFace, TensorFlow, PyTorch, Slurm, vLLM, Kubeflow, Metaflow, Custom Artifact versioning tooling
 
 ### Observability
-Datadog, Prometheus, Grafana, ELK Stack, Netdata, distributed tracing, SLO/SLA monitoring
+Datadog, Prometheus, Grafana, ELK Stack, Netdata, CloudWatch, distributed tracing, SLO/SLA monitoring, log aggregation, alerting
 
 ### Security & Compliance
-Lacework, OWASP ZAP, Keycloak, OIDC/SAML, Britive, IAM/RBAC, DevSecOps, ISO 27001, Soc 2
+Lacework, OWASP ZAP, Keycloak, OIDC/SAML, Britive, IAM/RBAC, DevSecOps, ISO 27001, SOC 2 Type II, NIST SP 800-53, WAF, Wireguard, CloudTrail, GuardDuty
 
 ### Languages & Tools
-Linux, Python, Django, Flask, Bash, Git, Docker, Terraform, Ansible, Selenium, Appium, JMETER, ROS2, FastDDS, Wireshark, TCP/IP, HTTP/MQTT
+Linux, Python, Django, Flask, Bash, Git, Docker, DockerHub, ECR, Terraform, Ansible, Selenium, Appium, JMETER, ROS2, FastDDS, Wireshark, TCP/IP, HTTP/MQTT
 
 ---
 
@@ -136,17 +140,18 @@ Physics-based framework applying classical mechanics principles (Hamiltonian and
 
 ## Platform & SRE Leadership
 
-As a platform architect and SRE systems leader, I've consistently championed infrastructure excellence and engineering velocity. My leadership philosophy centers on building self-service platform ecosystems that empower teams—eliminating toil, automating lifecycle operations, and establishing infrastructure as the foundation for organizational scaling.
+As a platform architect and SRE systems leader, I've consistently championed infrastructure excellence and engineering velocity. My leadership philosophy centers on building self-service platform ecosystems that empower teams—eliminating toil, automating lifecycle operations, and establishing infrastructure as the foundation for organizational scaling. I maintain active technical roadmaps, anticipate future infrastructure trends, and architect platforms that scale ahead of organizational growth while leveraging best-in-class tooling and emerging technologies.
 
 Key infrastructure initiatives include:
 
 - Architected self-service platform strategies enabling product teams to move independently with centralized infrastructure guardrails
-- Built and maintained high-reliability infrastructure across multi-cloud environments (AWS, Azure, GCP)
-- Established comprehensive observability, security, and compliance standards across organizations
-- Drove GitOps and Infrastructure-as-Code adoption company-wide, enabling reproducible, auditable deployments
-- Led ISO 27001 certification and AWS Partner review initiatives
+- Built and maintained high-reliability infrastructure across multi-cloud environments (AWS, Azure, GCP) with focus on resilience and fault tolerance
+- Established comprehensive observability, security, and compliance standards across organizations including SLO definition, alerting hierarchies, and runbook automation
+- Drove GitOps and Infrastructure-as-Code adoption company-wide, enabling reproducible, auditable deployments with full traceability
+- Led ISO 27001 certification and AWS Partner review initiatives with security-first architecture patterns
 - Mentored platform, infrastructure, and systems engineering teams across cloud-native and distributed systems domains
 - Engineered automated provisioning, scaling, and decommissioning workflows eliminating manual operations overhead
+- Implemented SRE best practices: on-call rotations, incident management, blameless postmortems, error budgets, chaos engineering, and continuous reliability testing
 
 ---
 
