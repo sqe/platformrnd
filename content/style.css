@@ -491,16 +491,7 @@ footer a {
   color: var(--text-primary);
 }
 
-.page-content h3 + p,
-.page-content h3 + ul {
-  margin-left: 1.5rem;
-  padding-left: 0;
-}
 
-.page-content h3 + p + p,
-.page-content h3 + p + ul {
-  margin-left: 1.5rem;
-}
 
 .page-content ul {
   margin-left: 1.5rem;
