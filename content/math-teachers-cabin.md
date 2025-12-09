@@ -2,7 +2,7 @@ Title: The Math Teacher's Cabin
 Date: 2025-12-08
 Category: Stories
 Tags: reflection, dreams, mentor, teacher
-Slug: articles
+Slug: math-teachers-cabin
 
 *An Ode to a Distinguished Teacher of the Republic of Uzbekistan*
 
