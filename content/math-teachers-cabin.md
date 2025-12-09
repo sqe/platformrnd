@@ -6,7 +6,7 @@ Slug: math-teachers-cabin
 
 *An Ode to a Distinguished Teacher of the Republic of Uzbekistan*
 
-## Orifjon Bakirov
+### Orifjon Bakirov
 
 ---
 
@@ -32,6 +32,7 @@ On my way back through the very same cemetery, a fall of leaves started, and lig
 ### **The Encounter**
 A door opened in one of the cabins there, and the man who opened it was **my math teacher**. He invited me over. I was so glad to see him and rushed toward him. The walls of his cabin were decorated with formulas of abridged multiplication and trigonometry, just like his math classroom at the lyceum where I had studied two decades ago.
 
+
 Seeing all this was a bit unusual. I asked my teacher what he was doing in this place.
 
 > **Teacher:** "This is the place I have to live from now on."
@@ -40,6 +41,7 @@ I asked why he wasn't living with his family.
 
 > **Teacher:** "I can't anymore, and this is my final destination."
 
+
 While we were chatting, a young student girl came in as well, and she started pulling out her homework. My teacher introduced us and said there were some very bright, aspiring young students who were very into math, and that we have a very good generation who will continue to work in this field of science.
 
 We caught up on pretty much everything about our lives, and I told him about my adventures in my professional and personal life.
@@ -47,8 +49,10 @@ We caught up on pretty much everything about our lives, and I told him about my 
 ### **The Final Request**
 It was getting dark. As we decided to call it a day, my teacher asked me for a favor.
 
+
 * **Me:** "Sure, anything I can do."
 * **Teacher:** He said that his cabin gets very cold and asked if I could arrange water heating for his room.
+
 
 I gladly took the request and started searching for heater installation services. After finding one, I decided to call.
 
