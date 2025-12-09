@@ -11,7 +11,6 @@ DEFAULT_LANG = 'en'
 DEFAULT_CATEGORY = 'Open Source Projects'
 ARTICLE_URL = 'blog/{slug}.html'
 ARTICLE_SAVE_AS = 'blog/{slug}.html'
-INDEX_SAVE_AS = 'blog.html'
 ARTICLES_URL = 'blog.html'
 ARTICLES_SAVE_AS = 'blog.html'
 
