@@ -1,7 +1,7 @@
 Title: Articles
 Date: 2025-11-23
-Slug: blog
-Save_as: blog.html
+Slug: articles
+Save_as: articles.html
 Status: hidden
 
 All articles.
