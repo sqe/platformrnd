@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Kubernetes Operator for Self-Hosted Cube Core - Platform Research And Development</title>
+    <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
+    <link rel="canonical" href="https://platformrnd.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://platformrnd.com/style.css">
+    <link rel="alternate" type="application/atom+xml" title="Platform Research And Development Atom Feed" href="feeds/all.atom.xml">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">Platform R&D</a>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/articles.html">Articles</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button></li>
+            </ul>
+        </nav>
+
+<article class="page-content">
+    <h1>A Kubernetes Operator for Self-Hosted Cube Core</h1>
+    <div class="post-meta">
+        <span>September 02, 2026</span>
+<span> • Open Source Projects</span>    </div>
+
+    <p>The <a href="https://github.com/sqe/cube-microk8s-operator">Cube Core MicroK8s Operator</a>
+encodes self-hosted Cube Core as a declarative Kubernetes API. A <code>CubeCluster</code>
+describes API replicas, refresh workers, Cube Store topology, model and Secret
+references, storage, and service exposure. The controller continuously turns
+that intent into standard Kubernetes resources and reports readiness back to
+the custom resource.</p>
+<p><img alt="Cube Core MicroK8s Operator architecture" src="https://platformrnd.com/images/cube-microk8s-operator.png"></p>
+<h2>Why an operator instead of deployment YAML</h2>
+<p>A static manifest can start Cube, but it does not provide a durable ownership
+model. The operator validates referenced configuration, applies owner
+references, chooses single or clustered Cube Store resources, preserves
+allocated Service fields, removes resources made obsolete by topology changes,
+and calculates readiness from every expected component.</p>
+<p>The <code>platform.cube.dev/v1alpha1</code> API reconciles:</p>
+<ul>
+<li>Cube API Deployment, Service, and PodDisruptionBudget;</li>
+<li>a dedicated refresh-worker Deployment;</li>
+<li>either one Cube Store Deployment or router/worker StatefulSets;</li>
+<li>private services and a NetworkPolicy around Cube Store; and</li>
+<li>a Ready condition with observed generation and internal endpoint.</li>
+</ul>
+<p>The operator reads model ConfigMaps and configuration Secrets but does not
+create credentials. This keeps database passwords and JWT signing material out
+of custom-resource specs and Git history.</p>
+<h2>One API, two controller implementations</h2>
+<p>The default controller is written in Go with controller-runtime and Kubernetes
+Lease leader election. It is the recommended production path because multiple
+manager replicas can coordinate safely. A separately packaged Python/Kopf
+controller implements the same resource contract as a readable, Pythonic
+alternative for teams that prefer rapid Python iteration.</p>
+<p>Exactly one implementation may run at a time. Both controllers own the same
+Deployments, Services, StatefulSets, and status fields; running both would
+create reconciliation races. Switching therefore means deleting one controller
+Deployment, waiting for termination, and only then applying the other.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Go/controller-runtime, the default</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-k<span class="w"> </span>config/default
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/cube-operator
+
+<span class="c1"># Alternative Kopf controller: stop Go first</span>
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>delete<span class="w"> </span>deployment<span class="w"> </span>cube-operator<span class="w"> </span>--wait<span class="o">=</span><span class="nb">true</span>
+kubectl<span class="w"> </span>apply<span class="w"> </span>-k<span class="w"> </span>config/kopf
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/cube-operator-kopf
+</code></pre></div>
+
+<p>This dual implementation is useful beyond language preference: it documents
+which behavior belongs to the API contract and which belongs to a particular
+framework.</p>
+<h2>Storage and query topology</h2>
+<p>Cube API translates dimensions and measures from the model ConfigMap into SQL
+for the configured data source. Cube Store serves caching and pre-aggregation;
+the refresh worker updates those structures independently from request-serving
+API replicas.</p>
+<p>Single mode supports an ordinary existing PVC and is appropriate for compact
+installations. Clustered mode creates a router and multiple worker StatefulSets.
+Its remote directory must be genuinely shared and concurrently mountable, or it
+should use S3. Merely attaching the same <code>ReadWriteOnce</code> volume name to several
+nodes does not create a distributed filesystem.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">platform.cube.dev/v1alpha1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CubeCluster</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">analytics</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cube</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">modelConfigMap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cube-model</span>
+<span class="w">  </span><span class="nt">configurationSecret</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cube-configuration</span>
+<span class="w">  </span><span class="nt">api</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">refreshWorker</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">cubeStore</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">clustered</span>
+<span class="w">    </span><span class="nt">workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">remoteStorage</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3</span>
+<span class="w">      </span><span class="nt">s3</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">bucket</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">company-cube-prod</span>
+<span class="w">        </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-west-2</span>
+<span class="w">        </span><span class="nt">secretRef</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cubestore-s3</span>
+</code></pre></div>
+
+<p>Images in the examples are digest-pinned. Workload identity is preferable for
+S3; a referenced Secret is available where static credentials are unavoidable.
+Containers drop Linux capabilities and disallow privilege escalation, while
+Cube Store accepts only the component traffic selected by NetworkPolicy.</p>
+<h2>A telemetry demo that tests more than installation</h2>
+<p>The included Kind environment creates PostgreSQL, a collector with scoped
+Kubernetes read access, a semantic telemetry model, and Cube Core. The collector
+writes point-in-time pod observations. The E2E script verifies liveness,
+readiness, metadata compilation, and a real semantic query rather than stopping
+at “the pod is Running.”</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/cube-microk8s-operator.git
+<span class="nb">cd</span><span class="w"> </span>cube-microk8s-operator
+
+make<span class="w"> </span>verify
+make<span class="w"> </span>kind-up<span class="w">       </span><span class="c1"># Go controller</span>
+make<span class="w"> </span>kind-e2e
+make<span class="w"> </span>kind-down
+
+<span class="c1"># The same demo through the Python implementation</span>
+make<span class="w"> </span>kind-up-kopf
+make<span class="w"> </span>kind-e2e
+make<span class="w"> </span>kind-down
+</code></pre></div>
+
+<p>The Kind scripts detect amd64 versus Apple Silicon arm64 nodes and select the
+matching digest-pinned Cube Store image. The demo API is mapped only to the
+local machine. Production DNS, certificates, firewall rules, backups, and
+public ingress remain explicit operator responsibilities.</p>
+<h2>Agents consume governed analytics, not database credentials</h2>
+<p>A local agent skill mints a short-lived Cube JWT and calls the Cube Core REST
+contract. It first inspects <code>/cubejs-api/v1/meta</code>, then submits bounded semantic
+queries to <code>/cubejs-api/v1/load</code>. This lets an agent use named measures and
+dimensions without receiving PostgreSQL credentials or permission to execute
+arbitrary SQL.</p>
+<p>Cube's hosted Chat API and official Cloud skills are a separate product
+boundary. This project documents them as optional Cube Cloud integrations; it
+does not claim those hosted features are part of open-source Cube Core.</p>
+<h2>Publication and operational boundaries</h2>
+<p>The repository includes an OperatorHub/OLM path: bundle and catalog metadata,
+CSV install modes, validation, scorecard, Kind+OLM testing, image signing, and
+the community-operators pull-request workflow. Documentation states whether a
+release has actually been published rather than treating packaging instructions
+as publication evidence.</p>
+<p>Before production use, test CRD upgrades, restore procedures, controller
+failover, Cube Store recovery, database limits, and model changes under the
+target workload. “Production-oriented” means these controls are represented;
+it does not replace environment-specific qualification.</p>
+<p><strong>Explore the project:</strong>
+<a href="https://github.com/sqe/cube-microk8s-operator">GitHub repository</a> ·
+<a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/architecture.md">Architecture</a> ·
+<a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md">Agent boundary</a></p>
+    <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
+        <span class="tag">kubernetes</span>
+        <span class="tag">operator</span>
+        <span class="tag">cube</span>
+        <span class="tag">analytics</span>
+        <span class="tag">golang</span>
+        <span class="tag">kopf</span>
+        <span class="tag">kind</span>
+        <span class="tag">microk8s</span>
+    </div>
+</article>
+<div style="margin-top: 3rem; text-align: center;">
+    <a href="https://platformrnd.com/articles.html">← Back to Articles</a>
+</div>
+
+        <footer>
+            <p>&copy; 2025 Aziz Kurbanov. All rights reserved.</p>
+            <p>Platform R&D • <a href="https://github.com/sqe">GitHub</a></p>
+        </footer>
+    </div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+</html>

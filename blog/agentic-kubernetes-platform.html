@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building an Agentic Kubernetes Platform That Runs Anywhere - Platform Research And Development</title>
+    <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
+    <link rel="canonical" href="https://platformrnd.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://platformrnd.com/style.css">
+    <link rel="alternate" type="application/atom+xml" title="Platform Research And Development Atom Feed" href="feeds/all.atom.xml">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">Platform R&D</a>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/articles.html">Articles</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button></li>
+            </ul>
+        </nav>
+
+<article class="page-content">
+    <h1>Building an Agentic Kubernetes Platform That Runs Anywhere</h1>
+    <div class="post-meta">
+        <span>September 02, 2026</span>
+<span> • Open Source Projects</span>    </div>
+
+    <p>The <a href="https://github.com/sqe/agentic-kubernetes-platform">Agentic Kubernetes Platform</a>
+is an Apache-2.0 reference architecture for running specialist agents, model
+inference, and training without tying the application contract to one cloud. It
+uses the same agent protocol on AWS EKS and Proxmox-hosted Kubernetes; only the
+capacity, identity, load-balancing, and object-storage adapters change.</p>
+<p><img alt="Agentic Kubernetes Platform architecture" src="https://platformrnd.com/images/agentic-kubernetes-platform.png"></p>
+<h2>The core design decision: events between agents</h2>
+<p>Direct HTTP calls produce a deceptively simple demo but tightly couple agent
+availability, retry behavior, and scaling. Here, the supervisor discovers an
+exact skill from an Agent Card, publishes a JSON-RPC 2.0 request to the agent's
+Kafka topic, and correlates the response from <code>results.*</code> using the request ID.</p>
+<div class="highlight"><pre><span></span><code>client → Cilium Gateway → supervisor → tasks.weather
+                                      → weather worker
+client ← supervisor ← results.weather ←┘
+</code></pre></div>
+
+<p>Workers publish their result before committing the input offset. That gives the
+system an explicit at-least-once contract. It does not make an external weather
+API, Neo4j, and Kafka one transaction, so each handler must use the request or
+document ID as an idempotency key. This is a more useful production contract
+than pretending distributed side effects are exactly once.</p>
+<p>Every specialist owns a directory, versioned Agent Card, task/result topics,
+domain implementation, container, and focused tests. The shared runtime owns
+JSON-RPC validation, manual Kafka commits, Redis caching, Prometheus metrics,
+and optional MLflow traces. Domain behavior remains outside the framework.</p>
+<h2>Three specialists demonstrate different workloads</h2>
+<p>The weather agent is intentionally lightweight. It resolves imperfect location
+phrasing through Open-Meteo, serves current conditions and forecasts, and caches
+repeated reads. It demonstrates the minimum useful agent contract without
+requiring an LLM.</p>
+<p>The knowledge-graph agent demonstrates expensive asynchronous work. Its API
+stores an uploaded PDF, text, or JSON document in S3 or RustFS and sends only a
+durable URI and metadata through Kafka. A KEDA-scaled worker extracts bounded
+chunks through an OpenAI-compatible model, validates entities and relationships
+against a versioned ontology, writes graph truth to Neo4j, and indexes semantic
+candidates in Qdrant. The included explorer renders the result in 2D or 3D and
+traces shortest paths with evidence back to the source object.</p>
+<p>The analytics agent delegates governed questions such as <code>analytics.usage</code> to
+Cube Core. It never accepts arbitrary SQL. Instead it constructs a bounded
+semantic query, adds the authenticated conversation owner as a tenant filter,
+signs a short-lived Cube JWT, and returns both rows and the exact query for
+reproduction. The sibling Cube operator owns Cube API, refresh worker, and Cube
+Store lifecycle.</p>
+<h2>Conversations, identity, and model routing</h2>
+<p>The minimal dashboard is deliberately not another runtime. It calls the same
+supervisor API, persists user and pending assistant messages in PostgreSQL, and
+polls until a correlated Kafka result completes the response. Read-only sharing
+uses a rotatable 256-bit token; PostgreSQL stores only its SHA-256 digest.</p>
+<p>Cognito is the managed AWS identity provider, while the bare-metal profile uses
+the Keycloak Operator. APIs derive tenant identity from verified OIDC claims,
+not request parameters. Redis remains disposable cache, PostgreSQL owns
+relational workflow state, Neo4j owns explicit relationships, Qdrant owns
+rebuildable vectors, and S3/RustFS owns durable source artifacts.</p>
+<p>The supervisor's LLM gateway is a visible, replaceable component. A local Apple
+Silicon environment can route prompts through an MLX-hosted Qwen 27B 4-bit
+model; GPU clusters use an OpenAI-compatible endpoint such as vLLM. Named skills
+still work when the router model is absent. Bring Your Own Agent requires only a
+valid Agent Card and Kafka contract; Bring Your Own Model requires an internal
+OpenAI-compatible endpoint and explicit registration.</p>
+<h2>Portable infrastructure without pretending it is identical</h2>
+<p>The two targets share Cilium CNI, NetworkPolicy, Envoy, Gateway API, Kafka,
+KEDA, Helm packaging, and agent contracts. Their infrastructure adapters differ:</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>AWS</th>
+<th>Bare metal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kubernetes</td>
+<td>EKS</td>
+<td>K3s on Proxmox VMs</td>
+</tr>
+<tr>
+<td>Identity</td>
+<td>Cognito</td>
+<td>Keycloak Operator</td>
+</tr>
+<tr>
+<td>Public address</td>
+<td>AWS load balancer</td>
+<td>MetalLB</td>
+</tr>
+<tr>
+<td>Durable objects</td>
+<td>S3</td>
+<td>RustFS S3-compatible API</td>
+</tr>
+<tr>
+<td>GPU capacity</td>
+<td>Autoscaled NVIDIA nodes</td>
+<td>Passed-through local NVIDIA cards</td>
+</tr>
+</tbody>
+</table>
+<p>Object storage is the durable source for models and datasets. An init container
+hydrates a PVC or local NVMe cache concurrently and atomically, so restarts can
+reuse warm files rather than repeatedly downloading from an external model
+registry. This improves startup only when the cache is retained and networking
+is appropriately provisioned; the project does not claim storage eliminates
+model-loading time.</p>
+<h2>Reproduce it locally</h2>
+<p>Docker Compose is the shortest application-level path:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/agentic-kubernetes-platform.git
+<span class="nb">cd</span><span class="w"> </span>agentic-kubernetes-platform
+make<span class="w"> </span>install<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span><span class="nb">test</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
+open<span class="w"> </span>http://localhost:8002/dashboard
+</code></pre></div>
+
+<p>Kind exercises the Kubernetes topology, including Cilium Gateway API,
+Redpanda's Kafka-compatible API, KEDA, RustFS, PostgreSQL, Qdrant, Neo4j, Redis,
+and operator-managed Keycloak:</p>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>kind-up
+make<span class="w"> </span>kind-status
+curl<span class="w"> </span>--fail<span class="w"> </span>http://127.0.0.1:8080/knowledge/health
+open<span class="w"> </span>http://127.0.0.1:8080/dashboard
+make<span class="w"> </span>kind-down
+</code></pre></div>
+
+<p>The repository separates source checks from deployment evidence. Unit tests,
+Helm rendering, Terraform validation, and Compose validation prove only their
+stated scope. Runtime evidence should include request IDs, Kafka correlation,
+Kubernetes status, redacted Hubble flows, and timestamps—not unsupported claims
+about production availability, throughput, or savings.</p>
+<p><strong>Explore the project:</strong>
+<a href="https://github.com/sqe/agentic-kubernetes-platform">GitHub repository</a> ·
+<a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ARCHITECTURE.md">Architecture</a> ·
+<a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ADDING_AGENTS.md">Adding an agent</a></p>
+    <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
+        <span class="tag">kubernetes</span>
+        <span class="tag">agents</span>
+        <span class="tag">kafka</span>
+        <span class="tag">cilium</span>
+        <span class="tag">gpu</span>
+        <span class="tag">knowledge-graph</span>
+        <span class="tag">aws</span>
+        <span class="tag">proxmox</span>
+    </div>
+</article>
+<div style="margin-top: 3rem; text-align: center;">
+    <a href="https://platformrnd.com/articles.html">← Back to Articles</a>
+</div>
+
+        <footer>
+            <p>&copy; 2025 Aziz Kurbanov. All rights reserved.</p>
+            <p>Platform R&D • <a href="https://github.com/sqe">GitHub</a></p>
+        </footer>
+    </div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+</html>

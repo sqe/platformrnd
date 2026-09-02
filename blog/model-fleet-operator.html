@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Fleet: Declarative GPU Inference, Training, and Agent Operations - Platform Research And Development</title>
+    <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
+    <link rel="canonical" href="https://platformrnd.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://platformrnd.com/style.css">
+    <link rel="alternate" type="application/atom+xml" title="Platform Research And Development Atom Feed" href="feeds/all.atom.xml">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/" class="logo">Platform R&D</a>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/articles.html">Articles</a></li>
+                <li><a href="/about.html">About</a></li>
+                <li><button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button></li>
+            </ul>
+        </nav>
+
+<article class="page-content">
+    <h1>Model Fleet: Declarative GPU Inference, Training, and Agent Operations</h1>
+    <div class="post-meta">
+        <span>September 02, 2026</span>
+<span> • Open Source Projects</span>    </div>
+
+    <p>The <a href="https://github.com/sqe/model-fleet-operator">Model Fleet Operator</a> provides
+one declarative API for containerized inference, training, immutable datasets,
+and managed agents. The central principle is deliberately conservative: custom
+resources express intent, while the resulting workloads remain ordinary
+Kubernetes Deployments, Services, Jobs, KEDA scalers, and Cilium routes.</p>
+<p><img alt="Model Fleet Operator architecture" src="https://platformrnd.com/images/model-fleet-operator.png"></p>
+<h2>Four APIs divide ownership cleanly</h2>
+<p><code>InferenceService</code> describes a model-serving container, resource requests,
+accelerator fit, scaling policy, Service, and optional Gateway API route.
+<code>TrainingRun</code> creates one immutable Job attempt with datasets, storage,
+deadlines, retries, parallelism, suspension, and cancellation. <code>Dataset</code>
+registers immutable version metadata, named splits, an access allowlist, and an
+optional read-only PVC. <code>AgentRegistration</code> links a versioned Agent Card to its
+runtime and operational state.</p>
+<p>This avoids model-specific shell scripts while preserving Kubernetes debugging:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>examples/inference-vllm.yaml
+kubectl<span class="w"> </span>get<span class="w"> </span>isvc,deploy,service,scaledobject,httproute<span class="w"> </span>-n<span class="w"> </span>models
+
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>examples/training-pytorch.yaml
+kubectl<span class="w"> </span>get<span class="w"> </span>trun,job<span class="w"> </span>-n<span class="w"> </span>models
+</code></pre></div>
+
+<p>The controller never downloads model data into its own pod and never reads a
+Hugging Face token. An init container can prefetch into a shared volume using a
+Secret reference; the inference container sees only the resulting model files.
+Training outputs and checkpoints belong in durable object storage, not the Job's
+ephemeral filesystem.</p>
+<h2>GPU fit is a scheduling input, not a performance promise</h2>
+<p>Requesting one GPU says nothing about whether a model fits. Model Fleet accepts
+module-level budgets split into sharded and replicated memory. Sharded weights
+are divided across the requested GPU count; runtime libraries and other
+replicated allocations are added per device, then a safety margin is applied:</p>
+<div class="highlight"><pre><span></span><code>required per GPU = ceil((Σ sharded / GPU count + Σ replicated) × (1 + margin))
+</code></pre></div>
+
+<p>For 90 GiB of sharded allocations, 4 GiB replicated per device, two GPUs, and a
+10% margin, each GPU needs <code>ceil((90 / 2 + 4) × 1.10) = 54 GiB</code>. The operator
+maps that requirement to a portable GPU-memory capacity label and can also add
+required affinity for specific NVIDIA products.</p>
+<p>This is admission and placement guidance—not dynamic VRAM bin packing and not a
+throughput guarantee. Kubernetes still allocates whole GPU devices. Drivers,
+device plugins, MIG configuration, and node labels remain infrastructure
+responsibilities, owned by cloud images or the NVIDIA GPU Operator.</p>
+<h2>Pod scaling and node capacity are different control loops</h2>
+<p>KEDA decides how many model pods are needed. A cloud or bare-metal capacity
+provider decides whether nodes exist to run pending pods. Keeping those loops
+separate makes the workload API portable:</p>
+<ul>
+<li>EKS can use Karpenter NodePools;</li>
+<li>GKE can use managed node-pool autoscaling; and</li>
+<li>bare metal uses existing NVIDIA nodes or an external machine provider.</li>
+</ul>
+<p>True scale-to-zero requires a signal that exists while the model pod is absent,
+such as Kafka lag, gateway backlog, SQS, or Pub/Sub. A Prometheus metric emitted
+only by the sleeping model cannot wake itself. This detail is why the operator
+passes through external KEDA triggers rather than inventing a misleading
+“automatic” scaler.</p>
+<h2>Cilium networking and secure workload boundaries</h2>
+<p>An <code>InferenceService</code> creates an <code>HTTPRoute</code>; the platform administrator owns
+the shared Cilium Gateway, listener policy, certificates, and public DNS. This
+keeps model authors from silently creating load balancers. Dedicated service
+accounts and Secret references keep provider, registry, and repository
+credentials outside the operator and custom-resource status.</p>
+<p>The same chart runs on Kind, MicroK8s, EKS, and GKE when Cilium owns Gateway API.
+Kind intentionally uses an echo workload because Docker nodes do not expose a
+GPU by default; it verifies controller reconciliation and L7 routing without
+pretending to benchmark inference.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/model-fleet-operator.git
+<span class="nb">cd</span><span class="w"> </span>model-fleet-operator
+make<span class="w"> </span>kind-up
+kubectl<span class="w"> </span>--context<span class="w"> </span>kind-model-fleet<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>examples/inference-kind.yaml
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Host: model.localhost&#39;</span><span class="w"> </span>http://127.0.0.1:8080/
+make<span class="w"> </span>kind-down
+</code></pre></div>
+
+<h2>The agent and operations control plane</h2>
+<p>The optional registry persists Agent Cards as <code>AgentRegistration</code> resources.
+The supervisor resolves an exact skill or asks an allowlisted LLM gateway to
+choose among registered skills, then publishes JSON-RPC through Kafka. Workers
+publish a correlated result before committing the task. A built-in operations
+agent can inspect fleet state and request explicit inference or training
+actions using the same contract.</p>
+<p>Slack uses Socket Mode, so the bot needs no public callback ingress. Read-only
+inventory is the safe default. Mutating operations require user/channel
+allowlists, and quota requests are disabled until a reviewed provider policy is
+attached. Sensitive commands require explicit confirmation rather than treating
+natural language as authorization.</p>
+<p>Operational visibility combines Prometheus, Grafana, Hubble, DCGM GPU metrics,
+OpenCost, cloud billing exports, and MLflow. Billing and OpenCost can overlap,
+so the reporting path presents them separately instead of adding them into a
+misleading total. Grafana snapshots can stream to Slack without writing PNGs to
+the bot filesystem.</p>
+<h2>Concrete Qwen patterns</h2>
+<p>The examples include a quantized Qwen 27B inference/gateway profile and a
+Qwen3-VL image LoRA training shape. Quantization reduces weight memory but does
+not make KV cache, activations, runtime allocations, context length, or training
+memory disappear. A 24 GiB target is a testable fit hypothesis; production
+capacity must be measured on the exact GPU, driver, serving build, sequence
+length, and concurrency. The operator captures those requirements without
+hard-coding one model family.</p>
+<p>The result is a control plane with clear boundaries: model authors declare
+workloads and immutable inputs, Kubernetes reconciles pods and Jobs, KEDA owns
+replica demand, infrastructure owns nodes, Cilium owns ingress, and observability
+systems provide evidence. Each component can be replaced without rewriting the
+custom-resource contract.</p>
+<p><strong>Explore the project:</strong>
+<a href="https://github.com/sqe/model-fleet-operator">GitHub repository</a> ·
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/GPU_CAPACITY.md">GPU capacity</a> ·
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/AGENT_CONTROL_PLANE.md">Agent control plane</a></p>
+    <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
+        <span class="tag">kubernetes</span>
+        <span class="tag">operator</span>
+        <span class="tag">gpu</span>
+        <span class="tag">inference</span>
+        <span class="tag">training</span>
+        <span class="tag">keda</span>
+        <span class="tag">cilium</span>
+        <span class="tag">slack</span>
+        <span class="tag">kafka</span>
+    </div>
+</article>
+<div style="margin-top: 3rem; text-align: center;">
+    <a href="https://platformrnd.com/articles.html">← Back to Articles</a>
+</div>
+
+        <footer>
+            <p>&copy; 2025 Aziz Kurbanov. All rights reserved.</p>
+            <p>Platform R&D • <a href="https://github.com/sqe">GitHub</a></p>
+        </footer>
+    </div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            themeToggle.textContent = '🌙';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+</html>
