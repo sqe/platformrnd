@@ -10,6 +10,9 @@ This is the source for **platformrnd.com** — a showcase of open source project
 
 ## Projects Featured
 
+- **[agentic-kubernetes-platform](https://github.com/sqe/agentic-kubernetes-platform)** — Event-driven agents, GPU workloads, knowledge graphs, and governed analytics across AWS and Proxmox
+- **[cube-microk8s-operator](https://github.com/sqe/cube-microk8s-operator)** — Go and Python/Kopf Kubernetes operator implementations for self-hosted Cube Core
+- **[model-fleet-operator](https://github.com/sqe/model-fleet-operator)** — Declarative GPU inference, training, datasets, model routing, and agent operations
 - **[robotics-k8s-infra](https://github.com/sqe/robotics-k8s-infra)** — Production-grade Kubernetes platform for cloud/edge robotics with KubeEdge, ROS2, ArgoCD, and Cilium
 - **[urlstatus](https://github.com/sqe/urlstatus)** — Distributed health-check and monitoring service for infrastructure
 - **[fizmatmod](https://github.com/sqe/fizmatmod)** — Physics and mathematical modeling library for computational simulation
@@ -28,6 +31,9 @@ This is the source for **platformrnd.com** — a showcase of open source project
 platformrnd.com/
 ├── content/                    # Markdown articles and pages
 │   ├── robotics-k8s-infra.md
+│   ├── agentic-kubernetes-platform.md
+│   ├── cube-microk8s-operator.md
+│   ├── model-fleet-operator.md
 │   ├── urlstatus.md
 │   ├── fizmatmod.md
 │   ├── esddns.md
@@ -74,10 +80,13 @@ The generated site will be in the `output/` directory.
 ### Development Server
 
 ```bash
-pelican -l content -o output -s pelicanconf.py
+pelican content -o output -s pelicanconf.py --relative-urls
+pelican -r -l content -o output -s pelicanconf.py --relative-urls
 ```
 
-This watches for changes and rebuilds automatically (requires `livereload` plugin).
+Open `http://127.0.0.1:8000` in a separate terminal or browser. The first
+command guarantees `output/index.html` exists; `-r -l` then rebuilds on changes
+and serves the generated site. Press Ctrl-C to stop it.
 
 ## Adding Content
 

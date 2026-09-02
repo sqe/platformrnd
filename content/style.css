@@ -501,6 +501,54 @@ footer a {
   font-weight: 500;
 }
 
+.page-content p {
+  margin: 1rem 0;
+  color: var(--text-secondary);
+}
+
+.page-content img {
+  display: block;
+  width: min(1120px, calc(100vw - 2rem));
+  max-width: none;
+  height: auto;
+  margin: 2rem 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px var(--shadow-light);
+}
+
+.page-content pre {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+}
+
+.page-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+.page-content table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+}
+
+.page-content th,
+.page-content td {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.page-content th {
+  background: var(--bg-secondary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
