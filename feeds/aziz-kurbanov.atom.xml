@@ -336,6 +336,7 @@ service and the &lt;code&gt;AgentExecutions&lt;/code&gt; model. The Go image run
 collector, or ingestion as independent processes; event collection is not part
 of reconciliation.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# From the source checkout; requires Docker, Kind, kubectl, curl, jq and Python.&lt;/span&gt;
+python&lt;span class="w"&gt; &lt;/span&gt;-m&lt;span class="w"&gt; &lt;/span&gt;pip&lt;span class="w"&gt; &lt;/span&gt;install&lt;span class="w"&gt; &lt;/span&gt;-r&lt;span class="w"&gt; &lt;/span&gt;demo/requirements-mcp.txt
 make&lt;span class="w"&gt; &lt;/span&gt;kind-up&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="c1"&gt;# Go controller&lt;/span&gt;
 make&lt;span class="w"&gt; &lt;/span&gt;kind-e2e
 make&lt;span class="w"&gt; &lt;/span&gt;kind-down
@@ -359,6 +360,120 @@ tests and the Go race detector.&lt;/p&gt;
 demo at &lt;code&gt;http://127.0.0.1:4000&lt;/code&gt;; ingestion is internal with temporary loopback
 forwarding during E2E. Production DNS, certificates, firewalls, backups, and
 ingress remain explicit environment responsibilities.&lt;/p&gt;
+&lt;h2&gt;A real weather agent, not only a synthetic trace&lt;/h2&gt;
+&lt;p&gt;I also ran the weather agent from my separate platform checkout through a
+standalone stdio MCP entrypoint. It uses the same Python &lt;code&gt;WeatherHandler&lt;/code&gt; as
+the platform's Kafka weather service, but this demonstration invoked it on the
+host: it did not submit a Kafka task, run an LLM, or automatically instrument
+the entire deployed fleet. The agent fetched real data from Open-Meteo.&lt;/p&gt;
+&lt;p&gt;For the October 17, 2026 capture, Reykjavik's observation at 20:45 was:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;location&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;Reykjavik&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;current&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;temperature_2m&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;9.7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;relative_humidity_2m&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;91&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;wind_speed_10m&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;45.0&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The units were °C, %, and km/h. These are captured values, not a current
+forecast or a performance benchmark. The completed trace
+&lt;code&gt;mcp-bb768566719a424aba21b58af46a6c8b&lt;/code&gt; was ingested into PostgreSQL, then read
+back through Cube. Both returned the same BI metrics:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Agent&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Spans&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Runs&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Failed runs&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Average run ms&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Input/output tokens&lt;/th&gt;
+&lt;th style="text-align: right;"&gt;Reported USD&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;weather&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;3&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;1&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;0&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;2160.206&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;0 / 0&lt;/td&gt;
+&lt;td style="text-align: right;"&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The three successful records describe the &lt;strong&gt;run&lt;/strong&gt;, the &lt;strong&gt;MCP tool call&lt;/strong&gt;, and
+the &lt;strong&gt;JSON result artifact reference&lt;/strong&gt;. No model ran, so tokens and cost are
+zero—not estimated or fabricated. A new invocation gets its own trace ID and
+real timestamps.&lt;/p&gt;
+&lt;p&gt;The operator repository's
+&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/demo/mcp_execution.py"&gt;MCP execution client&lt;/a&gt;
+can invoke a trusted stdio MCP server, save its actual response and completed
+spans, submit them to ingestion, and verify the returned Cube graph. An
+&lt;code&gt;--execute-only&lt;/code&gt; mode explicitly skips ingestion and reports
+&lt;code&gt;cubeVerified: false&lt;/code&gt;; the full capture above reported &lt;code&gt;cubeVerified: true&lt;/code&gt;.
+The private agent implementation is not copied into the public operator repo.
+See the &lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/weather-mcp-demo.md"&gt;reproduction guide&lt;/a&gt;
+for environment setup, token handling, and commands.&lt;/p&gt;
+&lt;h3&gt;What is stored in SQL, and what is semantic?&lt;/h3&gt;
+&lt;p&gt;The execution records are physically persisted in
+&lt;code&gt;public.agent_executions&lt;/code&gt;: identities, parent links, timestamps, outcomes,
+duration, usage, and typed detail fields in JSONB. The weather response itself
+is a local &lt;code&gt;.result.json&lt;/code&gt; artifact; SQL stores its URI and media type, &lt;strong&gt;not&lt;/strong&gt;
+normalized temperature or humidity observations. A &lt;code&gt;file:&lt;/code&gt; URI is local to that
+host, not an uploaded report or a portable download link.&lt;/p&gt;
+&lt;p&gt;Cube's &lt;code&gt;AgentExecutions.yml&lt;/code&gt; defines the semantic measures and dimensions.
+When a client requests runs or latency, Cube generates SQL over the stored
+events. It does not create a materialized SQL table for every measure. The
+verified &lt;code&gt;/cubejs-api/v1/sql&lt;/code&gt; response reported &lt;code&gt;external: false&lt;/code&gt; and
+&lt;code&gt;preAggregations: []&lt;/code&gt;: this demo queried PostgreSQL without a pre-aggregation.
+Deploying Cube Store does not, by itself, prove caching or rollup acceleration.&lt;/p&gt;
+&lt;p&gt;For an authorized database audit, this query reproduces the captured run count
+and average latency:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="k"&gt;SELECT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent_name&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="k"&gt;count&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;FILTER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;run&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;AS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;runs&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="k"&gt;avg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;duration_ms&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;FILTER&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;kind&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;run&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;AS&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;average_run_ms&lt;/span&gt;
+&lt;span class="k"&gt;FROM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;public&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;agent_executions&lt;/span&gt;
+&lt;span class="k"&gt;WHERE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;trace_id&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;mcp-bb768566719a424aba21b58af46a6c8b&amp;#39;&lt;/span&gt;
+&lt;span class="k"&gt;GROUP&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;BY&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;agent_name&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It returned &lt;code&gt;weather&lt;/code&gt;, &lt;code&gt;1&lt;/code&gt;, and &lt;code&gt;2160.206&lt;/code&gt;. The corresponding Cube REST query
+lets BI applications use the shared semantic definitions instead of
+reimplementing that SQL in every consumer:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;query&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;dimensions&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;measures&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.runs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.averageRunDurationMs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;filters&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[{&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;member&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.traceId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;operator&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;equals&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;      &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;values&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;mcp-bb768566719a424aba21b58af46a6c8b&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="p"&gt;}]&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Post this to &lt;code&gt;/cubejs-api/v1/load&lt;/code&gt; with a short-lived Cube JWT in
+&lt;code&gt;Authorization&lt;/code&gt;. For daily execution BI, group by agent and day using
+&lt;code&gt;AgentExecutions.endedAt&lt;/code&gt;, then compare run counts, failures, latency, and
+reported model usage. For audit drill-down, query event/parent IDs, tool names,
+and artifact URIs. Do not sum overlapping span durations as total run latency.
+The &lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/weather-mcp-demo.md"&gt;query guide&lt;/a&gt;
+includes the full aggregate query, raw-record SQL, and inspection of Cube's
+generated SQL. Retention applies, so replace the captured trace ID with a fresh
+one when reproducing the example.&lt;/p&gt;
+&lt;p&gt;This is &lt;strong&gt;BI about agent execution&lt;/strong&gt;, not yet weather-domain BI. Analyzing
+temperature trends would require a separate observation table and Cube model.
+Nor does this configure a dashboard product or expose Cube's SQL wire protocol.
+The shared-token demo is not tenant isolation: server-side access policies are
+still required before external or multi-tenant use.&lt;/p&gt;
+&lt;p&gt;Public CI exercises the MCP → ingestion → PostgreSQL → Cube path for both
+controllers with a clearly labelled deterministic fixture. It does not depend
+on my private checkout or the availability of a live weather API. The live
+weather run and matching SQL/Cube results were verified separately.&lt;/p&gt;
 &lt;h2&gt;Concrete artifacts: infrastructure versus agent output&lt;/h2&gt;
 &lt;p&gt;For &lt;code&gt;CubeCluster/analytics&lt;/code&gt; in single-store mode, the &lt;strong&gt;operator creates&lt;/strong&gt;
 &lt;code&gt;analytics-api&lt;/code&gt; (Deployment, Service, and PDB), &lt;code&gt;analytics-refresh-worker&lt;/code&gt;
@@ -504,7 +619,7 @@ preserved when redistributing those components.&lt;/p&gt;
 &lt;a href="https://github.com/sqe/cube-microk8s-operator"&gt;GitHub repository&lt;/a&gt; ·
 &lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/architecture.md"&gt;Architecture&lt;/a&gt; ·
 &lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-executions.md"&gt;Execution telemetry&lt;/a&gt; ·
-&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md"&gt;Agent boundary&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="cube"/><category term="analytics"/><category term="agents"/><category term="telemetry"/><category term="golang"/><category term="kopf"/><category term="kind"/><category term="microk8s"/></entry><entry><title>Model Fleet: Declarative GPU Inference, Training, and Agent Operations</title><link href="https://platformrnd.com/blog/model-fleet-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/model-fleet-operator.html</id><summary type="html">&lt;p&gt;A deep technical look at a Kubernetes operator that converts model intent into standard inference, training, networking, scaling, dataset, GPU-placement, observability, and agent-control resources.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/model-fleet-operator"&gt;Model Fleet Operator&lt;/a&gt; provides
+&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md"&gt;Agent boundary&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="cube"/><category term="analytics"/><category term="agents"/><category term="telemetry"/><category term="mcp"/><category term="golang"/><category term="kopf"/><category term="kind"/><category term="microk8s"/></entry><entry><title>Model Fleet: Declarative GPU Inference, Training, and Agent Operations</title><link href="https://platformrnd.com/blog/model-fleet-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/model-fleet-operator.html</id><summary type="html">&lt;p&gt;A deep technical look at a Kubernetes operator that converts model intent into standard inference, training, networking, scaling, dataset, GPU-placement, observability, and agent-control resources.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/model-fleet-operator"&gt;Model Fleet Operator&lt;/a&gt; provides
 one declarative API for containerized inference, training, immutable datasets,
 and managed agents. The central principle is deliberately conservative: custom
 resources express intent, while the resulting workloads remain ordinary

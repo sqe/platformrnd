@@ -236,6 +236,7 @@ service and the <code>AgentExecutions</code> model. The Go image runs the manage
 collector, or ingestion as independent processes; event collection is not part
 of reconciliation.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># From the source checkout; requires Docker, Kind, kubectl, curl, jq and Python.</span>
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>demo/requirements-mcp.txt
 make<span class="w"> </span>kind-up<span class="w">       </span><span class="c1"># Go controller</span>
 make<span class="w"> </span>kind-e2e
 make<span class="w"> </span>kind-down
@@ -259,6 +260,120 @@ tests and the Go race detector.</p>
 demo at <code>http://127.0.0.1:4000</code>; ingestion is internal with temporary loopback
 forwarding during E2E. Production DNS, certificates, firewalls, backups, and
 ingress remain explicit environment responsibilities.</p>
+<h2>A real weather agent, not only a synthetic trace</h2>
+<p>I also ran the weather agent from my separate platform checkout through a
+standalone stdio MCP entrypoint. It uses the same Python <code>WeatherHandler</code> as
+the platform's Kafka weather service, but this demonstration invoked it on the
+host: it did not submit a Kafka task, run an LLM, or automatically instrument
+the entire deployed fleet. The agent fetched real data from Open-Meteo.</p>
+<p>For the October 17, 2026 capture, Reykjavik's observation at 20:45 was:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Reykjavik&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;temperature_2m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">9.7</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;relative_humidity_2m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">91</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;wind_speed_10m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The units were °C, %, and km/h. These are captured values, not a current
+forecast or a performance benchmark. The completed trace
+<code>mcp-bb768566719a424aba21b58af46a6c8b</code> was ingested into PostgreSQL, then read
+back through Cube. Both returned the same BI metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th style="text-align: right;">Spans</th>
+<th style="text-align: right;">Runs</th>
+<th style="text-align: right;">Failed runs</th>
+<th style="text-align: right;">Average run ms</th>
+<th style="text-align: right;">Input/output tokens</th>
+<th style="text-align: right;">Reported USD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>weather</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2160.206</td>
+<td style="text-align: right;">0 / 0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>The three successful records describe the <strong>run</strong>, the <strong>MCP tool call</strong>, and
+the <strong>JSON result artifact reference</strong>. No model ran, so tokens and cost are
+zero—not estimated or fabricated. A new invocation gets its own trace ID and
+real timestamps.</p>
+<p>The operator repository's
+<a href="https://github.com/sqe/cube-microk8s-operator/blob/main/demo/mcp_execution.py">MCP execution client</a>
+can invoke a trusted stdio MCP server, save its actual response and completed
+spans, submit them to ingestion, and verify the returned Cube graph. An
+<code>--execute-only</code> mode explicitly skips ingestion and reports
+<code>cubeVerified: false</code>; the full capture above reported <code>cubeVerified: true</code>.
+The private agent implementation is not copied into the public operator repo.
+See the <a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/weather-mcp-demo.md">reproduction guide</a>
+for environment setup, token handling, and commands.</p>
+<h3>What is stored in SQL, and what is semantic?</h3>
+<p>The execution records are physically persisted in
+<code>public.agent_executions</code>: identities, parent links, timestamps, outcomes,
+duration, usage, and typed detail fields in JSONB. The weather response itself
+is a local <code>.result.json</code> artifact; SQL stores its URI and media type, <strong>not</strong>
+normalized temperature or humidity observations. A <code>file:</code> URI is local to that
+host, not an uploaded report or a portable download link.</p>
+<p>Cube's <code>AgentExecutions.yml</code> defines the semantic measures and dimensions.
+When a client requests runs or latency, Cube generates SQL over the stored
+events. It does not create a materialized SQL table for every measure. The
+verified <code>/cubejs-api/v1/sql</code> response reported <code>external: false</code> and
+<code>preAggregations: []</code>: this demo queried PostgreSQL without a pre-aggregation.
+Deploying Cube Store does not, by itself, prove caching or rollup acceleration.</p>
+<p>For an authorized database audit, this query reproduces the captured run count
+and average latency:</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">agent_name</span><span class="p">,</span>
+<span class="w">       </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">FILTER</span><span class="w"> </span><span class="p">(</span><span class="k">WHERE</span><span class="w"> </span><span class="n">kind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;run&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">runs</span><span class="p">,</span>
+<span class="w">       </span><span class="k">avg</span><span class="p">(</span><span class="n">duration_ms</span><span class="p">)</span><span class="w"> </span><span class="n">FILTER</span><span class="w"> </span><span class="p">(</span><span class="k">WHERE</span><span class="w"> </span><span class="n">kind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;run&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">average_run_ms</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">public</span><span class="p">.</span><span class="n">agent_executions</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">trace_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;mcp-bb768566719a424aba21b58af46a6c8b&#39;</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">agent_name</span><span class="p">;</span>
+</code></pre></div>
+
+<p>It returned <code>weather</code>, <code>1</code>, and <code>2160.206</code>. The corresponding Cube REST query
+lets BI applications use the shared semantic definitions instead of
+reimplementing that SQL in every consumer:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;AgentExecutions.agent&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;measures&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;AgentExecutions.runs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.averageRunDurationMs&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;filters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">      </span><span class="nt">&quot;member&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.traceId&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;equals&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;values&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mcp-bb768566719a424aba21b58af46a6c8b&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Post this to <code>/cubejs-api/v1/load</code> with a short-lived Cube JWT in
+<code>Authorization</code>. For daily execution BI, group by agent and day using
+<code>AgentExecutions.endedAt</code>, then compare run counts, failures, latency, and
+reported model usage. For audit drill-down, query event/parent IDs, tool names,
+and artifact URIs. Do not sum overlapping span durations as total run latency.
+The <a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/weather-mcp-demo.md">query guide</a>
+includes the full aggregate query, raw-record SQL, and inspection of Cube's
+generated SQL. Retention applies, so replace the captured trace ID with a fresh
+one when reproducing the example.</p>
+<p>This is <strong>BI about agent execution</strong>, not yet weather-domain BI. Analyzing
+temperature trends would require a separate observation table and Cube model.
+Nor does this configure a dashboard product or expose Cube's SQL wire protocol.
+The shared-token demo is not tenant isolation: server-side access policies are
+still required before external or multi-tenant use.</p>
+<p>Public CI exercises the MCP → ingestion → PostgreSQL → Cube path for both
+controllers with a clearly labelled deterministic fixture. It does not depend
+on my private checkout or the availability of a live weather API. The live
+weather run and matching SQL/Cube results were verified separately.</p>
 <h2>Concrete artifacts: infrastructure versus agent output</h2>
 <p>For <code>CubeCluster/analytics</code> in single-store mode, the <strong>operator creates</strong>
 <code>analytics-api</code> (Deployment, Service, and PDB), <code>analytics-refresh-worker</code>
@@ -412,6 +527,7 @@ preserved when redistributing those components.</p>
         <span class="tag">analytics</span>
         <span class="tag">agents</span>
         <span class="tag">telemetry</span>
+        <span class="tag">mcp</span>
         <span class="tag">golang</span>
         <span class="tag">kopf</span>
         <span class="tag">kind</span>
