@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Platform Research And Development</title><link href="https://platformrnd.com/" rel="alternate"/><link href="https://platformrnd.com/feeds/all-en.atom.xml" rel="self"/><id>https://platformrnd.com/</id><updated>2026-09-02T00:00:00-07:00</updated><entry><title>Building an Agentic Kubernetes Platform That Runs Anywhere</title><link href="https://platformrnd.com/blog/agentic-kubernetes-platform.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/agentic-kubernetes-platform.html</id><summary type="html">&lt;p&gt;A deep dive into an event-driven, portable agent platform that combines Kafka coordination, Cilium networking, GPU model serving, governed analytics, knowledge graphs, and reproducible AWS, Proxmox, and Kind deployment paths.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/agentic-kubernetes-platform"&gt;Agentic Kubernetes Platform&lt;/a&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Platform Research And Development</title><link href="https://platformrnd.com/" rel="alternate"/><link href="https://platformrnd.com/feeds/all-en.atom.xml" rel="self"/><id>https://platformrnd.com/</id><updated>2026-10-17T00:00:00-07:00</updated><entry><title>Building an Agentic Kubernetes Platform That Runs Anywhere</title><link href="https://platformrnd.com/blog/agentic-kubernetes-platform.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/agentic-kubernetes-platform.html</id><summary type="html">&lt;p&gt;A deep dive into an event-driven, portable agent platform that combines Kafka coordination, Cilium networking, GPU model serving, governed analytics, knowledge graphs, and reproducible AWS, Proxmox, and Kind deployment paths.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/agentic-kubernetes-platform"&gt;Agentic Kubernetes Platform&lt;/a&gt;
 is an Apache-2.0 reference architecture for running specialist agents, model
 inference, and training without tying the application contract to one cloud. It
 uses the same agent protocol on AWS EKS and Proxmox-hosted Kubernetes; only the
@@ -130,12 +130,21 @@ about production availability, throughput, or savings.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Explore the project:&lt;/strong&gt;
 &lt;a href="https://github.com/sqe/agentic-kubernetes-platform"&gt;GitHub repository&lt;/a&gt; ·
 &lt;a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ARCHITECTURE.md"&gt;Architecture&lt;/a&gt; ·
-&lt;a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ADDING_AGENTS.md"&gt;Adding an agent&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="agents"/><category term="kafka"/><category term="cilium"/><category term="gpu"/><category term="knowledge-graph"/><category term="aws"/><category term="proxmox"/></entry><entry><title>A Kubernetes Operator for Self-Hosted Cube Core</title><link href="https://platformrnd.com/blog/cube-microk8s-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/cube-microk8s-operator.html</id><summary type="html">&lt;p&gt;How a declarative CubeCluster API, interchangeable Go and Python controllers, storage-aware Cube Store topology, and a Kind telemetry demo turn self-hosted Cube Core into an operable Kubernetes workload.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/cube-microk8s-operator"&gt;Cube Core MicroK8s Operator&lt;/a&gt;
+&lt;a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ADDING_AGENTS.md"&gt;Adding an agent&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="agents"/><category term="kafka"/><category term="cilium"/><category term="gpu"/><category term="knowledge-graph"/><category term="aws"/><category term="proxmox"/></entry><entry><title>A Kubernetes Operator for Self-Hosted Cube Core</title><link href="https://platformrnd.com/blog/cube-microk8s-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-10-17T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/cube-microk8s-operator.html</id><summary type="html">&lt;p&gt;Deploy self-hosted Cube Core on Kubernetes, then query Kubernetes health and agent-execution telemetry: runs, skills, tools, handoffs, artifact references, validation, and model usage.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/cube-microk8s-operator"&gt;Cube Core MicroK8s Operator&lt;/a&gt;
 encodes self-hosted Cube Core as a declarative Kubernetes API. A &lt;code&gt;CubeCluster&lt;/code&gt;
 describes API replicas, refresh workers, Cube Store topology, model and Secret
 references, storage, and service exposure. The controller continuously turns
 that intent into standard Kubernetes resources and reports readiness back to
 the custom resource.&lt;/p&gt;
+&lt;p&gt;Despite its name, the operator is not tied to MicroK8s. It uses standard
+Kubernetes APIs on supported managed or self-hosted clusters; Proxmox and
+MicroK8s are optional infrastructure, not prerequisites. The current minimum
+Kubernetes version is 1.34. I use it in local cluster setups and on Kind.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Release scope:&lt;/strong&gt; the public v0.1.0 alpha OLM catalog is installation-tested.
+The new agent-execution pipeline described below is prepared for the next
+source/release update; it is not in the published v0.1.0 image. The OperatorHub
+submission is under community review, not an available listing. The custom
+OLM catalog works independently of that review.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Cube Core MicroK8s Operator architecture" src="https://platformrnd.com/images/cube-microk8s-operator.png"&gt;&lt;/p&gt;
 &lt;h2&gt;Why an operator instead of deployment YAML&lt;/h2&gt;
 &lt;p&gt;A static manifest can start Cube, but it does not provide a durable ownership
@@ -164,19 +173,127 @@ alternative for teams that prefer rapid Python iteration.&lt;/p&gt;
 Deployments, Services, StatefulSets, and status fields; running both would
 create reconciliation races. Switching therefore means deleting one controller
 Deployment, waiting for termination, and only then applying the other.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# Go/controller-runtime, the default&lt;/span&gt;
-kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-k&lt;span class="w"&gt; &lt;/span&gt;config/default
-kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;rollout&lt;span class="w"&gt; &lt;/span&gt;status&lt;span class="w"&gt; &lt;/span&gt;deployment/cube-operator
-
-&lt;span class="c1"&gt;# Alternative Kopf controller: stop Go first&lt;/span&gt;
-kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;delete&lt;span class="w"&gt; &lt;/span&gt;deployment&lt;span class="w"&gt; &lt;/span&gt;cube-operator&lt;span class="w"&gt; &lt;/span&gt;--wait&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
-kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-k&lt;span class="w"&gt; &lt;/span&gt;config/kopf
-kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;rollout&lt;span class="w"&gt; &lt;/span&gt;status&lt;span class="w"&gt; &lt;/span&gt;deployment/cube-operator-kopf
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
+&lt;p&gt;The &lt;a href="https://github.com/sqe/cube-microk8s-operator#deploy-or-switch-controllers"&gt;direct deployment guide&lt;/a&gt;
+covers Go/Kopf installation. Local image tags must be replaced with registry
+images outside Kind. The OLM route below uses the already-published Go image.&lt;/p&gt;
 &lt;p&gt;This dual implementation is useful beyond language preference: it documents
 which behavior belongs to the API contract and which belongs to a particular
 framework.&lt;/p&gt;
+&lt;h2&gt;Install on Kubernetes&lt;/h2&gt;
+&lt;p&gt;You need Kubernetes 1.34+, &lt;code&gt;kubectl&lt;/code&gt;, classic OLM, a reachable PostgreSQL data
+source, and a default StorageClass or an existing suitable PVC. Your networking
+plugin must implement NetworkPolicy to enforce the Cube Store restrictions.&lt;/p&gt;
+&lt;h3&gt;Install the public operator catalog&lt;/h3&gt;
+&lt;p&gt;If classic OLM is absent, install
+&lt;a href="https://sdk.operatorframework.io/docs/installation/"&gt;Operator SDK&lt;/a&gt; and run
+&lt;code&gt;operator-sdk olm install --version 0.46.0 --timeout 5m&lt;/code&gt; once. This uses classic
+OLM's &lt;code&gt;CatalogSource&lt;/code&gt; and &lt;code&gt;Subscription&lt;/code&gt;, not OLM v1. Do not run it alongside
+a direct Go or Kopf installation.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/sqe/cube-microk8s-operator.git
+&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cube-microk8s-operator
+kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;config/olm/install.yaml
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;wait&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--for&lt;span class="o"&gt;=&lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;csv/cube-microk8s-operator.v0.1.0&lt;span class="w"&gt; &lt;/span&gt;--timeout&lt;span class="o"&gt;=&lt;/span&gt;5m
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;wait&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--for&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;jsonpath&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{.status.phase}&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Succeeded&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;csv/cube-microk8s-operator.v0.1.0&lt;span class="w"&gt; &lt;/span&gt;--timeout&lt;span class="o"&gt;=&lt;/span&gt;5m
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube-system&lt;span class="w"&gt; &lt;/span&gt;rollout&lt;span class="w"&gt; &lt;/span&gt;status&lt;span class="w"&gt; &lt;/span&gt;deployment/cube-operator&lt;span class="w"&gt; &lt;/span&gt;--timeout&lt;span class="o"&gt;=&lt;/span&gt;2m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This installs the alpha Go controller cluster-wide in &lt;code&gt;cube-system&lt;/code&gt;, not a Cube
+instance or a database. The manifest assumes the global catalog namespace is
+&lt;code&gt;olm&lt;/code&gt;; adapt the CatalogSource namespace and Subscription's &lt;code&gt;sourceNamespace&lt;/code&gt;
+if yours differs. Review its automatic InstallPlan approval policy before use;
+do not create a second OperatorGroup in an existing operator namespace.
+&lt;a href="https://github.com/k8s-operatorhub/community-operators/pull/9651"&gt;OperatorHub submission #9651&lt;/a&gt;
+is a separate community review; OpenShift console listing is also separate.&lt;/p&gt;
+&lt;h3&gt;Configure a model, credentials, and storage&lt;/h3&gt;
+&lt;p&gt;This minimal model checks connectivity without depending on an application
+table. Replace it with semantic models for your own data afterward.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;namespace&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;--dry-run&lt;span class="o"&gt;=&lt;/span&gt;client&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;yaml&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;lt;&amp;lt;&amp;#39;YAML&amp;#39;&lt;/span&gt;
+&lt;span class="s"&gt;apiVersion: v1&lt;/span&gt;
+&lt;span class="s"&gt;kind: ConfigMap&lt;/span&gt;
+&lt;span class="s"&gt;metadata: {name: cube-model}&lt;/span&gt;
+&lt;span class="s"&gt;data:&lt;/span&gt;
+&lt;span class="s"&gt;  Connectivity.yml: |&lt;/span&gt;
+&lt;span class="s"&gt;    cubes:&lt;/span&gt;
+&lt;span class="s"&gt;      - name: Connectivity&lt;/span&gt;
+&lt;span class="s"&gt;        sql: SELECT 1 AS id&lt;/span&gt;
+&lt;span class="s"&gt;        measures:&lt;/span&gt;
+&lt;span class="s"&gt;          - name: count&lt;/span&gt;
+&lt;span class="s"&gt;            type: count&lt;/span&gt;
+&lt;span class="s"&gt;        dimensions:&lt;/span&gt;
+&lt;span class="s"&gt;          - name: id&lt;/span&gt;
+&lt;span class="s"&gt;            sql: id&lt;/span&gt;
+&lt;span class="s"&gt;            type: number&lt;/span&gt;
+&lt;span class="s"&gt;            primary_key: true&lt;/span&gt;
+&lt;span class="s"&gt;YAML&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Bash: enter credentials interactively; never commit them.&lt;/span&gt;
+&lt;span class="nb"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-rp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;PostgreSQL hostname: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_HOST
+&lt;span class="nb"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-rp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;PostgreSQL database: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_NAME
+&lt;span class="nb"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-rp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;PostgreSQL user: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_USER
+&lt;span class="nb"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-rsp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;PostgreSQL password: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_PASS&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;
+&lt;span class="nb"&gt;read&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;-rsp&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Cube API signing secret: &amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_API_SECRET&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;echo&lt;/span&gt;
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;create&lt;span class="w"&gt; &lt;/span&gt;secret&lt;span class="w"&gt; &lt;/span&gt;generic&lt;span class="w"&gt; &lt;/span&gt;cube-configuration&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;postgres&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_HOST&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$CUBE_DB_HOST&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_PORT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;5432&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$CUBE_DB_NAME&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_USER&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$CUBE_DB_USER&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_DB_PASS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$CUBE_DB_PASS&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--from-literal&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;CUBEJS_API_SECRET&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$CUBE_API_SECRET&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;--dry-run&lt;span class="o"&gt;=&lt;/span&gt;client&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;yaml&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;|&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-
+&lt;span class="nb"&gt;unset&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_HOST&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_NAME&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_USER&lt;span class="w"&gt; &lt;/span&gt;CUBE_DB_PASS&lt;span class="w"&gt; &lt;/span&gt;CUBE_API_SECRET
+
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;apply&lt;span class="w"&gt; &lt;/span&gt;-f&lt;span class="w"&gt; &lt;/span&gt;-&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;lt;&amp;lt;&amp;#39;YAML&amp;#39;&lt;/span&gt;
+&lt;span class="s"&gt;apiVersion: v1&lt;/span&gt;
+&lt;span class="s"&gt;kind: PersistentVolumeClaim&lt;/span&gt;
+&lt;span class="s"&gt;metadata: {name: cube-remote}&lt;/span&gt;
+&lt;span class="s"&gt;spec:&lt;/span&gt;
+&lt;span class="s"&gt;  accessModes: [ReadWriteOnce]&lt;/span&gt;
+&lt;span class="s"&gt;  resources:&lt;/span&gt;
+&lt;span class="s"&gt;    requests: {storage: 10Gi}&lt;/span&gt;
+&lt;span class="s"&gt;---&lt;/span&gt;
+&lt;span class="s"&gt;apiVersion: platform.cube.dev/v1alpha1&lt;/span&gt;
+&lt;span class="s"&gt;kind: CubeCluster&lt;/span&gt;
+&lt;span class="s"&gt;metadata: {name: analytics}&lt;/span&gt;
+&lt;span class="s"&gt;spec:&lt;/span&gt;
+&lt;span class="s"&gt;  modelConfigMap: cube-model&lt;/span&gt;
+&lt;span class="s"&gt;  configurationSecret: cube-configuration&lt;/span&gt;
+&lt;span class="s"&gt;  api: {replicas: 2}&lt;/span&gt;
+&lt;span class="s"&gt;  refreshWorker: {replicas: 1}&lt;/span&gt;
+&lt;span class="s"&gt;  cubeStore:&lt;/span&gt;
+&lt;span class="s"&gt;    mode: single&lt;/span&gt;
+&lt;span class="s"&gt;    remoteStorage:&lt;/span&gt;
+&lt;span class="s"&gt;      type: persistentVolume&lt;/span&gt;
+&lt;span class="s"&gt;      persistentVolume: {existingClaim: cube-remote}&lt;/span&gt;
+&lt;span class="s"&gt;    scratch: {size: 2Gi}&lt;/span&gt;
+&lt;span class="s"&gt;  service: {type: ClusterIP}&lt;/span&gt;
+&lt;span class="s"&gt;YAML&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Use an external secret manager and the database TLS settings appropriate for
+your provider in production. The operator does not provision PostgreSQL.
+The default Cube Store image is for amd64. On arm64, select the tested arm64
+image before waiting for readiness:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;patch&lt;span class="w"&gt; &lt;/span&gt;cubecluster&lt;span class="w"&gt; &lt;/span&gt;analytics&lt;span class="w"&gt; &lt;/span&gt;--type&lt;span class="o"&gt;=&lt;/span&gt;merge&lt;span class="w"&gt; &lt;/span&gt;-p&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;{&amp;quot;spec&amp;quot;:{&amp;quot;cubeStore&amp;quot;:{&amp;quot;image&amp;quot;:&amp;quot;cubejs/cubestore:arm64v8@sha256:d9254a2166513e99f888da6f85362362357805116cd4d70f2b22e318e6ca5007&amp;quot;}}}&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Then, on either architecture:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nb"&gt;wait&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;--for&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;condition&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Ready&lt;span class="w"&gt; &lt;/span&gt;cubecluster/analytics&lt;span class="w"&gt; &lt;/span&gt;--timeout&lt;span class="o"&gt;=&lt;/span&gt;15m
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;cubecluster&lt;span class="w"&gt; &lt;/span&gt;analytics
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;port-forward&lt;span class="w"&gt; &lt;/span&gt;--address&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;127&lt;/span&gt;.0.0.1&lt;span class="w"&gt; &lt;/span&gt;service/analytics-api&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;4000&lt;/span&gt;:4000
+&lt;span class="c1"&gt;# In another terminal:&lt;/span&gt;
+curl&lt;span class="w"&gt; &lt;/span&gt;--fail&lt;span class="w"&gt; &lt;/span&gt;--silent&lt;span class="w"&gt; &lt;/span&gt;--show-error&lt;span class="w"&gt; &lt;/span&gt;--max-time&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;http://127.0.0.1:4000/readyz
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Health is unauthenticated. Metadata and queries require a short-lived Cube JWT,
+sent directly in &lt;code&gt;Authorization&lt;/code&gt; without &lt;code&gt;Bearer&lt;/code&gt;; see the
+&lt;a href="https://github.com/sqe/cube-microk8s-operator#use-the-cube-core-rest-api"&gt;REST examples&lt;/a&gt;.
+Public access needs your own TLS ingress and authorization policy. This compact
+single-store example is not an HA storage design.&lt;/p&gt;
 &lt;h2&gt;Storage and query topology&lt;/h2&gt;
 &lt;p&gt;Cube API translates dimensions and measures from the model ConfigMap into SQL
 for the configured data source. Cube Store serves caching and pre-aggregation;
@@ -208,20 +325,17 @@ nodes does not create a distributed filesystem.&lt;/p&gt;
 &lt;span class="w"&gt;        &lt;/span&gt;&lt;span class="nt"&gt;secretRef&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l l-Scalar l-Scalar-Plain"&gt;cubestore-s3&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;Images in the examples are digest-pinned. Workload identity is preferable for
+&lt;p&gt;Default Cube/Cube Store images are digest-pinned. Workload identity is preferable for
 S3; a referenced Secret is available where static credentials are unavoidable.
 Containers drop Linux capabilities and disallow privilege escalation, while
 Cube Store accepts only the component traffic selected by NetworkPolicy.&lt;/p&gt;
 &lt;h2&gt;A telemetry demo that tests more than installation&lt;/h2&gt;
-&lt;p&gt;The included Kind environment creates PostgreSQL, a collector with scoped
-Kubernetes read access, a semantic telemetry model, and Cube Core. The collector
-writes point-in-time pod observations. The E2E script verifies liveness,
-readiness, metadata compilation, and a real semantic query rather than stopping
-at “the pod is Running.”&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/sqe/cube-microk8s-operator.git
-&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;cube-microk8s-operator
-
-make&lt;span class="w"&gt; &lt;/span&gt;verify
+&lt;p&gt;The Kind environment creates PostgreSQL, a read-only Node/Pod collector, Cube
+models, and Cube Core. The new update adds a separate authenticated ingestion
+service and the &lt;code&gt;AgentExecutions&lt;/code&gt; model. The Go image runs the manager,
+collector, or ingestion as independent processes; event collection is not part
+of reconciliation.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;# From the source checkout; requires Docker, Kind, kubectl, curl, jq and Python.&lt;/span&gt;
 make&lt;span class="w"&gt; &lt;/span&gt;kind-up&lt;span class="w"&gt;       &lt;/span&gt;&lt;span class="c1"&gt;# Go controller&lt;/span&gt;
 make&lt;span class="w"&gt; &lt;/span&gt;kind-e2e
 make&lt;span class="w"&gt; &lt;/span&gt;kind-down
@@ -232,33 +346,165 @@ make&lt;span class="w"&gt; &lt;/span&gt;kind-e2e
 make&lt;span class="w"&gt; &lt;/span&gt;kind-down
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;The Kind scripts detect amd64 versus Apple Silicon arm64 nodes and select the
-matching digest-pinned Cube Store image. The demo API is mapped only to the
-local machine. Production DNS, certificates, firewall rules, backups, and
-public ingress remain explicit operator responsibilities.&lt;/p&gt;
+&lt;p&gt;The E2E checks exercise health, metadata, Kubernetes observations, and every
+execution-record kind through real Cube queries. A synthetic two-agent task
+has nine spans, two runs (one failed), one failed validation, 13,000 ms average
+run duration, 160 input tokens, 48 output tokens, and $0.0168 reported cost.
+These are test fixtures, not a claim that real agents performed those tasks.
+Checks cover bad credentials, invalid records, out-of-order delivery, duplicate
+retries, conflicting replays, and persistence after ingestion pod replacement.
+CI exercises Go and Kopf, including repeated setup, plus PostgreSQL integration
+tests and the Go race detector.&lt;/p&gt;
+&lt;p&gt;Kind detects amd64/arm64 and selects the matching Cube Store image. Access the
+demo at &lt;code&gt;http://127.0.0.1:4000&lt;/code&gt;; ingestion is internal with temporary loopback
+forwarding during E2E. Production DNS, certificates, firewalls, backups, and
+ingress remain explicit environment responsibilities.&lt;/p&gt;
+&lt;h2&gt;Concrete artifacts: infrastructure versus agent output&lt;/h2&gt;
+&lt;p&gt;For &lt;code&gt;CubeCluster/analytics&lt;/code&gt; in single-store mode, the &lt;strong&gt;operator creates&lt;/strong&gt;
+&lt;code&gt;analytics-api&lt;/code&gt; (Deployment, Service, and PDB), &lt;code&gt;analytics-refresh-worker&lt;/code&gt;
+(Deployment), &lt;code&gt;analytics-cubestore&lt;/code&gt; (Deployment and Service), and a Cube Store
+NetworkPolicy. Clustered mode substitutes router/worker StatefulSets and
+Services. These are inspectable Kubernetes objects with owner references:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;deployments,statefulsets,services,pdb,networkpolicy
+kubectl&lt;span class="w"&gt; &lt;/span&gt;-n&lt;span class="w"&gt; &lt;/span&gt;cube&lt;span class="w"&gt; &lt;/span&gt;get&lt;span class="w"&gt; &lt;/span&gt;cubecluster&lt;span class="w"&gt; &lt;/span&gt;analytics&lt;span class="w"&gt; &lt;/span&gt;-o&lt;span class="w"&gt; &lt;/span&gt;yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The optional telemetry service creates the &lt;code&gt;agent_executions&lt;/code&gt; PostgreSQL table;
+the demo provides &lt;code&gt;AgentExecutions.yml&lt;/code&gt; in the model ConfigMap. Cube generates
+source SQL when clients query the model. The operator itself neither authors
+application SQL nor creates reports, screenshots, or code patches.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Agents create those output artifacts.&lt;/strong&gt; The telemetry service records their
+references and context. A completed artifact record could look like this
+(illustrative IDs/timestamps, not a real published report):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;eventId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;task-123-artifact&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;traceId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;task-123&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;runId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;task-123-analytics&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;parentId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;task-123-analytics&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;tenantId&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;local&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;cluster&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;kind-cube-demo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;namespace&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cube-demo&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;analytics-worker&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;kind&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;artifact&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;usage-report&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;status&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;succeeded&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;artifactUri&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;urn:example:task-123:usage-report&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;artifactType&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;application/json&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;startedAt&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2026-10-17T10:00:00Z&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;endedAt&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2026-10-17T10:00:01Z&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This may reference an agent-produced report, SQL file, test result, code patch,
+or screenshot stored elsewhere. Ingestion neither fetches nor stores the file;
+never send private content, credentials, or signed download URLs as metadata.&lt;/p&gt;
+&lt;h2&gt;What we capture for a complete agent task&lt;/h2&gt;
+&lt;p&gt;Agents instrument their runtime and submit terminal records to
+&lt;code&gt;POST /v1/executions&lt;/code&gt;, authenticated with a separate ingestion token. Each
+record has an event ID, trace/run/parent links, agent, timestamps, and an outcome.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Record&lt;/th&gt;
+&lt;th&gt;Captured evidence&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Run&lt;/td&gt;
+&lt;td&gt;Agent identity, task name, success/failure/cancellation, latency.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Skill&lt;/td&gt;
+&lt;td&gt;Skill name/version and its parent run.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Tool&lt;/td&gt;
+&lt;td&gt;Tool identity, outcome, duration, parent skill or run.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Handoff&lt;/td&gt;
+&lt;td&gt;Target agent; a delegated run links to the handoff.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Artifact&lt;/td&gt;
+&lt;td&gt;URI and media type, not the artifact contents.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Validation&lt;/td&gt;
+&lt;td&gt;Check name and passed/failed/skipped outcome.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Model call&lt;/td&gt;
+&lt;td&gt;Provider/model, input/output tokens, reported USD cost.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;For example: an analytics worker runs &lt;code&gt;operating-cube-core&lt;/code&gt;, calls a Cube query
+tool, records a report URI, and hands review to a second agent. The reviewer
+records its own run, model call, and validation result. All share a trace ID,
+with parent IDs showing how work was nested or delegated. This answers
+“which agents ran, what skills/tools did they use, what did they produce, and
+how did verification turn out?” without collecting private reasoning.&lt;/p&gt;
+&lt;p&gt;Usage belongs only to model-call records, preventing double-counted run totals.
+Immutable IDs make identical delivery retries safe and reject changed replays.
+Retention defaults to seven days. Costs are producer-reported, not calculated
+billing. A Cube query can compare outcomes and usage by agent:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;query&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;measures&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.runs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.failedRuns&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.inputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.outputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.costUsd&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;dimensions&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;AgentExecutions.agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="w"&gt;    &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;limit&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The synthetic E2E task's expected usage rows are:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="p"&gt;[&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;analytics-worker&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;runs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;failedRuns&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;inputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;137&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;outputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;41&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;costUsd&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;0.0123&lt;/span&gt;&lt;span class="p"&gt;},&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;agent&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;reviewer&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;runs&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;failedRuns&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;inputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;23&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;outputTokens&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;&amp;quot;costUsd&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;0.0045&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;These are readable projections of expected semantic results; Cube's actual
+responses use qualified member names such as &lt;code&gt;AgentExecutions.runs&lt;/code&gt; and commonly
+encode numeric values as strings. Filter by trace ID to inspect one task, or
+by &lt;code&gt;kind = skill&lt;/code&gt; and group by name/version to compare skill outcomes.&lt;/p&gt;
+&lt;p&gt;Inspect &lt;code&gt;/cubejs-api/v1/meta&lt;/code&gt; before querying. The
+&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-executions.md"&gt;execution contract&lt;/a&gt;
+has submission examples and the complete field contract. This is not automatic
+agent discovery, a live workflow engine, or chain-of-thought collection; it
+requires no Kafka or Temporal. The local shared-token endpoint is not a
+multi-tenant security boundary: external use requires trusted identity,
+server-side tenant enforcement, TLS, network restrictions, and rate limits.&lt;/p&gt;
 &lt;h2&gt;Agents consume governed analytics, not database credentials&lt;/h2&gt;
-&lt;p&gt;A local agent skill mints a short-lived Cube JWT and calls the Cube Core REST
-contract. It first inspects &lt;code&gt;/cubejs-api/v1/meta&lt;/code&gt;, then submits bounded semantic
+&lt;p&gt;A local read-only agent skill uses a short-lived Cube JWT supplied by a trusted
+caller and calls the Cube Core REST contract. It first inspects &lt;code&gt;/cubejs-api/v1/meta&lt;/code&gt;, then submits bounded semantic
 queries to &lt;code&gt;/cubejs-api/v1/load&lt;/code&gt;. This lets an agent use named measures and
 dimensions without receiving PostgreSQL credentials or permission to execute
-arbitrary SQL.&lt;/p&gt;
+arbitrary SQL through the skill. Authentication, allowed models, and tenant
+filters still require explicit server-side policy; the operator does not
+configure OIDC or guarantee tenant isolation by itself.&lt;/p&gt;
 &lt;p&gt;Cube's hosted Chat API and official Cloud skills are a separate product
 boundary. This project documents them as optional Cube Cloud integrations; it
 does not claim those hosted features are part of open-source Cube Core.&lt;/p&gt;
-&lt;h2&gt;Publication and operational boundaries&lt;/h2&gt;
-&lt;p&gt;The repository includes an OperatorHub/OLM path: bundle and catalog metadata,
-CSV install modes, validation, scorecard, Kind+OLM testing, image signing, and
-the community-operators pull-request workflow. Documentation states whether a
-release has actually been published rather than treating packaging instructions
-as publication evidence.&lt;/p&gt;
+&lt;h2&gt;Operational and licensing boundaries&lt;/h2&gt;
 &lt;p&gt;Before production use, test CRD upgrades, restore procedures, controller
 failover, Cube Store recovery, database limits, and model changes under the
 target workload. “Production-oriented” means these controls are represented;
-it does not replace environment-specific qualification.&lt;/p&gt;
+it does not replace environment-specific qualification. The next catalog is
+for fresh installations, not an advertised automatic upgrade from v0.1.0.&lt;/p&gt;
+&lt;p&gt;This is an independent community project, not an official Cube product or a
+claim of Cube endorsement. It deploys upstream &lt;a href="https://github.com/cube-js/cube"&gt;Cube&lt;/a&gt;
+and Cube Store images; credit belongs to the Cube authors and contributors.
+Original operator code is Apache-2.0. Cube Client is MIT licensed; Cube Backend
+is Apache-2.0 licensed. Upstream licenses/notices remain separate and must be
+preserved when redistributing those components.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Explore the project:&lt;/strong&gt;
 &lt;a href="https://github.com/sqe/cube-microk8s-operator"&gt;GitHub repository&lt;/a&gt; ·
 &lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/architecture.md"&gt;Architecture&lt;/a&gt; ·
-&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md"&gt;Agent boundary&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="cube"/><category term="analytics"/><category term="golang"/><category term="kopf"/><category term="kind"/><category term="microk8s"/></entry><entry><title>Model Fleet: Declarative GPU Inference, Training, and Agent Operations</title><link href="https://platformrnd.com/blog/model-fleet-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/model-fleet-operator.html</id><summary type="html">&lt;p&gt;A deep technical look at a Kubernetes operator that converts model intent into standard inference, training, networking, scaling, dataset, GPU-placement, observability, and agent-control resources.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/model-fleet-operator"&gt;Model Fleet Operator&lt;/a&gt; provides
+&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-executions.md"&gt;Execution telemetry&lt;/a&gt; ·
+&lt;a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md"&gt;Agent boundary&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="cube"/><category term="analytics"/><category term="agents"/><category term="telemetry"/><category term="golang"/><category term="kopf"/><category term="kind"/><category term="microk8s"/></entry><entry><title>Model Fleet: Declarative GPU Inference, Training, and Agent Operations</title><link href="https://platformrnd.com/blog/model-fleet-operator.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/model-fleet-operator.html</id><summary type="html">&lt;p&gt;A deep technical look at a Kubernetes operator that converts model intent into standard inference, training, networking, scaling, dataset, GPU-placement, observability, and agent-control resources.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/model-fleet-operator"&gt;Model Fleet Operator&lt;/a&gt; provides
 one declarative API for containerized inference, training, immutable datasets,
 and managed agents. The central principle is deliberately conservative: custom
 resources express intent, while the resulting workloads remain ordinary

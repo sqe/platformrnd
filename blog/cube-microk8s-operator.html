@@ -36,6 +36,15 @@ describes API replicas, refresh workers, Cube Store topology, model and Secret
 references, storage, and service exposure. The controller continuously turns
 that intent into standard Kubernetes resources and reports readiness back to
 the custom resource.</p>
+<p>Despite its name, the operator is not tied to MicroK8s. It uses standard
+Kubernetes APIs on supported managed or self-hosted clusters; Proxmox and
+MicroK8s are optional infrastructure, not prerequisites. The current minimum
+Kubernetes version is 1.34. I use it in local cluster setups and on Kind.</p>
+<p><strong>Release scope:</strong> the public v0.1.0 alpha OLM catalog is installation-tested.
+The new agent-execution pipeline described below is prepared for the next
+source/release update; it is not in the published v0.1.0 image. The OperatorHub
+submission is under community review, not an available listing. The custom
+OLM catalog works independently of that review.</p>
 <p><img alt="Cube Core MicroK8s Operator architecture" src="https://platformrnd.com/images/cube-microk8s-operator.png"></p>
 <h2>Why an operator instead of deployment YAML</h2>
 <p>A static manifest can start Cube, but it does not provide a durable ownership
@@ -64,19 +73,127 @@ alternative for teams that prefer rapid Python iteration.</p>
 Deployments, Services, StatefulSets, and status fields; running both would
 create reconciliation races. Switching therefore means deleting one controller
 Deployment, waiting for termination, and only then applying the other.</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Go/controller-runtime, the default</span>
-kubectl<span class="w"> </span>apply<span class="w"> </span>-k<span class="w"> </span>config/default
-kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/cube-operator
-
-<span class="c1"># Alternative Kopf controller: stop Go first</span>
-kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>delete<span class="w"> </span>deployment<span class="w"> </span>cube-operator<span class="w"> </span>--wait<span class="o">=</span><span class="nb">true</span>
-kubectl<span class="w"> </span>apply<span class="w"> </span>-k<span class="w"> </span>config/kopf
-kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/cube-operator-kopf
-</code></pre></div>
-
+<p>The <a href="https://github.com/sqe/cube-microk8s-operator#deploy-or-switch-controllers">direct deployment guide</a>
+covers Go/Kopf installation. Local image tags must be replaced with registry
+images outside Kind. The OLM route below uses the already-published Go image.</p>
 <p>This dual implementation is useful beyond language preference: it documents
 which behavior belongs to the API contract and which belongs to a particular
 framework.</p>
+<h2>Install on Kubernetes</h2>
+<p>You need Kubernetes 1.34+, <code>kubectl</code>, classic OLM, a reachable PostgreSQL data
+source, and a default StorageClass or an existing suitable PVC. Your networking
+plugin must implement NetworkPolicy to enforce the Cube Store restrictions.</p>
+<h3>Install the public operator catalog</h3>
+<p>If classic OLM is absent, install
+<a href="https://sdk.operatorframework.io/docs/installation/">Operator SDK</a> and run
+<code>operator-sdk olm install --version 0.46.0 --timeout 5m</code> once. This uses classic
+OLM's <code>CatalogSource</code> and <code>Subscription</code>, not OLM v1. Do not run it alongside
+a direct Go or Kopf installation.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/cube-microk8s-operator.git
+<span class="nb">cd</span><span class="w"> </span>cube-microk8s-operator
+kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>config/olm/install.yaml
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span>create<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>csv/cube-microk8s-operator.v0.1.0<span class="w"> </span>--timeout<span class="o">=</span>5m
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.phase}&#39;</span><span class="o">=</span>Succeeded<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>csv/cube-microk8s-operator.v0.1.0<span class="w"> </span>--timeout<span class="o">=</span>5m
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube-system<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/cube-operator<span class="w"> </span>--timeout<span class="o">=</span>2m
+</code></pre></div>
+
+<p>This installs the alpha Go controller cluster-wide in <code>cube-system</code>, not a Cube
+instance or a database. The manifest assumes the global catalog namespace is
+<code>olm</code>; adapt the CatalogSource namespace and Subscription's <code>sourceNamespace</code>
+if yours differs. Review its automatic InstallPlan approval policy before use;
+do not create a second OperatorGroup in an existing operator namespace.
+<a href="https://github.com/k8s-operatorhub/community-operators/pull/9651">OperatorHub submission #9651</a>
+is a separate community review; OpenShift console listing is also separate.</p>
+<h3>Configure a model, credentials, and storage</h3>
+<p>This minimal model checks connectivity without depending on an application
+table. Replace it with semantic models for your own data afterward.</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>cube<span class="w"> </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;&#39;YAML&#39;</span>
+<span class="s">apiVersion: v1</span>
+<span class="s">kind: ConfigMap</span>
+<span class="s">metadata: {name: cube-model}</span>
+<span class="s">data:</span>
+<span class="s">  Connectivity.yml: |</span>
+<span class="s">    cubes:</span>
+<span class="s">      - name: Connectivity</span>
+<span class="s">        sql: SELECT 1 AS id</span>
+<span class="s">        measures:</span>
+<span class="s">          - name: count</span>
+<span class="s">            type: count</span>
+<span class="s">        dimensions:</span>
+<span class="s">          - name: id</span>
+<span class="s">            sql: id</span>
+<span class="s">            type: number</span>
+<span class="s">            primary_key: true</span>
+<span class="s">YAML</span>
+
+<span class="c1"># Bash: enter credentials interactively; never commit them.</span>
+<span class="nb">read</span><span class="w"> </span>-rp<span class="w"> </span><span class="s1">&#39;PostgreSQL hostname: &#39;</span><span class="w"> </span>CUBE_DB_HOST
+<span class="nb">read</span><span class="w"> </span>-rp<span class="w"> </span><span class="s1">&#39;PostgreSQL database: &#39;</span><span class="w"> </span>CUBE_DB_NAME
+<span class="nb">read</span><span class="w"> </span>-rp<span class="w"> </span><span class="s1">&#39;PostgreSQL user: &#39;</span><span class="w"> </span>CUBE_DB_USER
+<span class="nb">read</span><span class="w"> </span>-rsp<span class="w"> </span><span class="s1">&#39;PostgreSQL password: &#39;</span><span class="w"> </span>CUBE_DB_PASS<span class="p">;</span><span class="w"> </span><span class="nb">echo</span>
+<span class="nb">read</span><span class="w"> </span>-rsp<span class="w"> </span><span class="s1">&#39;Cube API signing secret: &#39;</span><span class="w"> </span>CUBE_API_SECRET<span class="p">;</span><span class="w"> </span><span class="nb">echo</span>
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>cube-configuration<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_TYPE</span><span class="o">=</span>postgres<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_HOST</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUBE_DB_HOST</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_PORT</span><span class="o">=</span><span class="m">5432</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUBE_DB_NAME</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_USER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUBE_DB_USER</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_DB_PASS</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUBE_DB_PASS</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--from-literal<span class="o">=</span><span class="nv">CUBEJS_API_SECRET</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUBE_API_SECRET</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--dry-run<span class="o">=</span>client<span class="w"> </span>-o<span class="w"> </span>yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-
+<span class="nb">unset</span><span class="w"> </span>CUBE_DB_HOST<span class="w"> </span>CUBE_DB_NAME<span class="w"> </span>CUBE_DB_USER<span class="w"> </span>CUBE_DB_PASS<span class="w"> </span>CUBE_API_SECRET
+
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;&#39;YAML&#39;</span>
+<span class="s">apiVersion: v1</span>
+<span class="s">kind: PersistentVolumeClaim</span>
+<span class="s">metadata: {name: cube-remote}</span>
+<span class="s">spec:</span>
+<span class="s">  accessModes: [ReadWriteOnce]</span>
+<span class="s">  resources:</span>
+<span class="s">    requests: {storage: 10Gi}</span>
+<span class="s">---</span>
+<span class="s">apiVersion: platform.cube.dev/v1alpha1</span>
+<span class="s">kind: CubeCluster</span>
+<span class="s">metadata: {name: analytics}</span>
+<span class="s">spec:</span>
+<span class="s">  modelConfigMap: cube-model</span>
+<span class="s">  configurationSecret: cube-configuration</span>
+<span class="s">  api: {replicas: 2}</span>
+<span class="s">  refreshWorker: {replicas: 1}</span>
+<span class="s">  cubeStore:</span>
+<span class="s">    mode: single</span>
+<span class="s">    remoteStorage:</span>
+<span class="s">      type: persistentVolume</span>
+<span class="s">      persistentVolume: {existingClaim: cube-remote}</span>
+<span class="s">    scratch: {size: 2Gi}</span>
+<span class="s">  service: {type: ClusterIP}</span>
+<span class="s">YAML</span>
+</code></pre></div>
+
+<p>Use an external secret manager and the database TLS settings appropriate for
+your provider in production. The operator does not provision PostgreSQL.
+The default Cube Store image is for amd64. On arm64, select the tested arm64
+image before waiting for readiness:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>patch<span class="w"> </span>cubecluster<span class="w"> </span>analytics<span class="w"> </span>--type<span class="o">=</span>merge<span class="w"> </span>-p<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s1">&#39;{&quot;spec&quot;:{&quot;cubeStore&quot;:{&quot;image&quot;:&quot;cubejs/cubestore:arm64v8@sha256:d9254a2166513e99f888da6f85362362357805116cd4d70f2b22e318e6ca5007&quot;}}}&#39;</span>
+</code></pre></div>
+
+<p>Then, on either architecture:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span><span class="nv">condition</span><span class="o">=</span>Ready<span class="w"> </span>cubecluster/analytics<span class="w"> </span>--timeout<span class="o">=</span>15m
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>get<span class="w"> </span>cubecluster<span class="w"> </span>analytics
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>port-forward<span class="w"> </span>--address<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>service/analytics-api<span class="w"> </span><span class="m">4000</span>:4000
+<span class="c1"># In another terminal:</span>
+curl<span class="w"> </span>--fail<span class="w"> </span>--silent<span class="w"> </span>--show-error<span class="w"> </span>--max-time<span class="w"> </span><span class="m">10</span><span class="w"> </span>http://127.0.0.1:4000/readyz
+</code></pre></div>
+
+<p>Health is unauthenticated. Metadata and queries require a short-lived Cube JWT,
+sent directly in <code>Authorization</code> without <code>Bearer</code>; see the
+<a href="https://github.com/sqe/cube-microk8s-operator#use-the-cube-core-rest-api">REST examples</a>.
+Public access needs your own TLS ingress and authorization policy. This compact
+single-store example is not an HA storage design.</p>
 <h2>Storage and query topology</h2>
 <p>Cube API translates dimensions and measures from the model ConfigMap into SQL
 for the configured data source. Cube Store serves caching and pre-aggregation;
@@ -108,20 +225,17 @@ nodes does not create a distributed filesystem.</p>
 <span class="w">        </span><span class="nt">secretRef</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cubestore-s3</span>
 </code></pre></div>
 
-<p>Images in the examples are digest-pinned. Workload identity is preferable for
+<p>Default Cube/Cube Store images are digest-pinned. Workload identity is preferable for
 S3; a referenced Secret is available where static credentials are unavoidable.
 Containers drop Linux capabilities and disallow privilege escalation, while
 Cube Store accepts only the component traffic selected by NetworkPolicy.</p>
 <h2>A telemetry demo that tests more than installation</h2>
-<p>The included Kind environment creates PostgreSQL, a collector with scoped
-Kubernetes read access, a semantic telemetry model, and Cube Core. The collector
-writes point-in-time pod observations. The E2E script verifies liveness,
-readiness, metadata compilation, and a real semantic query rather than stopping
-at “the pod is Running.”</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/cube-microk8s-operator.git
-<span class="nb">cd</span><span class="w"> </span>cube-microk8s-operator
-
-make<span class="w"> </span>verify
+<p>The Kind environment creates PostgreSQL, a read-only Node/Pod collector, Cube
+models, and Cube Core. The new update adds a separate authenticated ingestion
+service and the <code>AgentExecutions</code> model. The Go image runs the manager,
+collector, or ingestion as independent processes; event collection is not part
+of reconciliation.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># From the source checkout; requires Docker, Kind, kubectl, curl, jq and Python.</span>
 make<span class="w"> </span>kind-up<span class="w">       </span><span class="c1"># Go controller</span>
 make<span class="w"> </span>kind-e2e
 make<span class="w"> </span>kind-down
@@ -132,38 +246,172 @@ make<span class="w"> </span>kind-e2e
 make<span class="w"> </span>kind-down
 </code></pre></div>
 
-<p>The Kind scripts detect amd64 versus Apple Silicon arm64 nodes and select the
-matching digest-pinned Cube Store image. The demo API is mapped only to the
-local machine. Production DNS, certificates, firewall rules, backups, and
-public ingress remain explicit operator responsibilities.</p>
+<p>The E2E checks exercise health, metadata, Kubernetes observations, and every
+execution-record kind through real Cube queries. A synthetic two-agent task
+has nine spans, two runs (one failed), one failed validation, 13,000 ms average
+run duration, 160 input tokens, 48 output tokens, and $0.0168 reported cost.
+These are test fixtures, not a claim that real agents performed those tasks.
+Checks cover bad credentials, invalid records, out-of-order delivery, duplicate
+retries, conflicting replays, and persistence after ingestion pod replacement.
+CI exercises Go and Kopf, including repeated setup, plus PostgreSQL integration
+tests and the Go race detector.</p>
+<p>Kind detects amd64/arm64 and selects the matching Cube Store image. Access the
+demo at <code>http://127.0.0.1:4000</code>; ingestion is internal with temporary loopback
+forwarding during E2E. Production DNS, certificates, firewalls, backups, and
+ingress remain explicit environment responsibilities.</p>
+<h2>Concrete artifacts: infrastructure versus agent output</h2>
+<p>For <code>CubeCluster/analytics</code> in single-store mode, the <strong>operator creates</strong>
+<code>analytics-api</code> (Deployment, Service, and PDB), <code>analytics-refresh-worker</code>
+(Deployment), <code>analytics-cubestore</code> (Deployment and Service), and a Cube Store
+NetworkPolicy. Clustered mode substitutes router/worker StatefulSets and
+Services. These are inspectable Kubernetes objects with owner references:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>get<span class="w"> </span>deployments,statefulsets,services,pdb,networkpolicy
+kubectl<span class="w"> </span>-n<span class="w"> </span>cube<span class="w"> </span>get<span class="w"> </span>cubecluster<span class="w"> </span>analytics<span class="w"> </span>-o<span class="w"> </span>yaml
+</code></pre></div>
+
+<p>The optional telemetry service creates the <code>agent_executions</code> PostgreSQL table;
+the demo provides <code>AgentExecutions.yml</code> in the model ConfigMap. Cube generates
+source SQL when clients query the model. The operator itself neither authors
+application SQL nor creates reports, screenshots, or code patches.</p>
+<p><strong>Agents create those output artifacts.</strong> The telemetry service records their
+references and context. A completed artifact record could look like this
+(illustrative IDs/timestamps, not a real published report):</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;eventId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-123-artifact&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;traceId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;runId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-123-analytics&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;parentId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-123-analytics&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tenantId&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;cluster&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kind-cube-demo&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cube-demo&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;analytics-worker&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;artifact&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;usage-report&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;succeeded&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;artifactUri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:example:task-123:usage-report&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;artifactType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;application/json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;startedAt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-10-17T10:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;endedAt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-10-17T10:00:01Z&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>This may reference an agent-produced report, SQL file, test result, code patch,
+or screenshot stored elsewhere. Ingestion neither fetches nor stores the file;
+never send private content, credentials, or signed download URLs as metadata.</p>
+<h2>What we capture for a complete agent task</h2>
+<p>Agents instrument their runtime and submit terminal records to
+<code>POST /v1/executions</code>, authenticated with a separate ingestion token. Each
+record has an event ID, trace/run/parent links, agent, timestamps, and an outcome.</p>
+<table>
+<thead>
+<tr>
+<th>Record</th>
+<th>Captured evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run</td>
+<td>Agent identity, task name, success/failure/cancellation, latency.</td>
+</tr>
+<tr>
+<td>Skill</td>
+<td>Skill name/version and its parent run.</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Tool identity, outcome, duration, parent skill or run.</td>
+</tr>
+<tr>
+<td>Handoff</td>
+<td>Target agent; a delegated run links to the handoff.</td>
+</tr>
+<tr>
+<td>Artifact</td>
+<td>URI and media type, not the artifact contents.</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Check name and passed/failed/skipped outcome.</td>
+</tr>
+<tr>
+<td>Model call</td>
+<td>Provider/model, input/output tokens, reported USD cost.</td>
+</tr>
+</tbody>
+</table>
+<p>For example: an analytics worker runs <code>operating-cube-core</code>, calls a Cube query
+tool, records a report URI, and hands review to a second agent. The reviewer
+records its own run, model call, and validation result. All share a trace ID,
+with parent IDs showing how work was nested or delegated. This answers
+“which agents ran, what skills/tools did they use, what did they produce, and
+how did verification turn out?” without collecting private reasoning.</p>
+<p>Usage belongs only to model-call records, preventing double-counted run totals.
+Immutable IDs make identical delivery retries safe and reject changed replays.
+Retention defaults to seven days. Costs are producer-reported, not calculated
+billing. A Cube query can compare outcomes and usage by agent:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;measures&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;AgentExecutions.runs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.failedRuns&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.inputTokens&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.outputTokens&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;AgentExecutions.costUsd&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;dimensions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;AgentExecutions.agent&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>The synthetic E2E task's expected usage rows are:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;analytics-worker&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;runs&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;failedRuns&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;inputTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">137</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;outputTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">41</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;costUsd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0123</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;reviewer&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;runs&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;failedRuns&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;inputTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;outputTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;costUsd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0045</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>These are readable projections of expected semantic results; Cube's actual
+responses use qualified member names such as <code>AgentExecutions.runs</code> and commonly
+encode numeric values as strings. Filter by trace ID to inspect one task, or
+by <code>kind = skill</code> and group by name/version to compare skill outcomes.</p>
+<p>Inspect <code>/cubejs-api/v1/meta</code> before querying. The
+<a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-executions.md">execution contract</a>
+has submission examples and the complete field contract. This is not automatic
+agent discovery, a live workflow engine, or chain-of-thought collection; it
+requires no Kafka or Temporal. The local shared-token endpoint is not a
+multi-tenant security boundary: external use requires trusted identity,
+server-side tenant enforcement, TLS, network restrictions, and rate limits.</p>
 <h2>Agents consume governed analytics, not database credentials</h2>
-<p>A local agent skill mints a short-lived Cube JWT and calls the Cube Core REST
-contract. It first inspects <code>/cubejs-api/v1/meta</code>, then submits bounded semantic
+<p>A local read-only agent skill uses a short-lived Cube JWT supplied by a trusted
+caller and calls the Cube Core REST contract. It first inspects <code>/cubejs-api/v1/meta</code>, then submits bounded semantic
 queries to <code>/cubejs-api/v1/load</code>. This lets an agent use named measures and
 dimensions without receiving PostgreSQL credentials or permission to execute
-arbitrary SQL.</p>
+arbitrary SQL through the skill. Authentication, allowed models, and tenant
+filters still require explicit server-side policy; the operator does not
+configure OIDC or guarantee tenant isolation by itself.</p>
 <p>Cube's hosted Chat API and official Cloud skills are a separate product
 boundary. This project documents them as optional Cube Cloud integrations; it
 does not claim those hosted features are part of open-source Cube Core.</p>
-<h2>Publication and operational boundaries</h2>
-<p>The repository includes an OperatorHub/OLM path: bundle and catalog metadata,
-CSV install modes, validation, scorecard, Kind+OLM testing, image signing, and
-the community-operators pull-request workflow. Documentation states whether a
-release has actually been published rather than treating packaging instructions
-as publication evidence.</p>
+<h2>Operational and licensing boundaries</h2>
 <p>Before production use, test CRD upgrades, restore procedures, controller
 failover, Cube Store recovery, database limits, and model changes under the
 target workload. “Production-oriented” means these controls are represented;
-it does not replace environment-specific qualification.</p>
+it does not replace environment-specific qualification. The next catalog is
+for fresh installations, not an advertised automatic upgrade from v0.1.0.</p>
+<p>This is an independent community project, not an official Cube product or a
+claim of Cube endorsement. It deploys upstream <a href="https://github.com/cube-js/cube">Cube</a>
+and Cube Store images; credit belongs to the Cube authors and contributors.
+Original operator code is Apache-2.0. Cube Client is MIT licensed; Cube Backend
+is Apache-2.0 licensed. Upstream licenses/notices remain separate and must be
+preserved when redistributing those components.</p>
 <p><strong>Explore the project:</strong>
 <a href="https://github.com/sqe/cube-microk8s-operator">GitHub repository</a> ·
 <a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/architecture.md">Architecture</a> ·
+<a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-executions.md">Execution telemetry</a> ·
 <a href="https://github.com/sqe/cube-microk8s-operator/blob/main/docs/agent-integration.md">Agent boundary</a></p>
     <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
         <span class="tag">kubernetes</span>
         <span class="tag">operator</span>
         <span class="tag">cube</span>
         <span class="tag">analytics</span>
+        <span class="tag">agents</span>
+        <span class="tag">telemetry</span>
         <span class="tag">golang</span>
         <span class="tag">kopf</span>
         <span class="tag">kind</span>
