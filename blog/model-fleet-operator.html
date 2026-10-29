@@ -36,6 +36,12 @@ and managed agents. The central principle is deliberately conservative: custom
 resources express intent, while the resulting workloads remain ordinary
 Kubernetes Deployments, Services, Jobs, KEDA scalers, and Cilium routes.</p>
 <p><img alt="Model Fleet Operator architecture" src="https://platformrnd.com/images/model-fleet-operator.png"></p>
+<p><strong>Release status:</strong> v0.1.0 is an alpha release candidate. The controller-only
+OLM catalog has passed a fresh local installation test; the expanded GitHub
+Actions matrix and public-image release verification remain separate gates.
+An OperatorHub listing is not available yet. The repository's
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/status.md">dated status record</a>
+tracks the actual release and upstream-review outcome.</p>
 <h2>Four APIs divide ownership cleanly</h2>
 <p><code>InferenceService</code> describes a model-serving container, resource requests,
 accelerator fit, scaling policy, Service, and optional Gateway API route.
@@ -73,6 +79,11 @@ required affinity for specific NVIDIA products.</p>
 throughput guarantee. Kubernetes still allocates whole GPU devices. Drivers,
 device plugins, MIG configuration, and node labels remain infrastructure
 responsibilities, owned by cloud images or the NVIDIA GPU Operator.</p>
+<p>AMD placement uses <code>spec.accelerator.vendor: amd</code> and <code>amd.com/gpu</code>; NVIDIA
+remains the default. Both inference and training validate vendor/count conflicts
+in resource requests and limits. AMD workloads require compatible drivers, an
+AMD device plugin and a tested ROCm container. Local tests verify generated
+resources and Kubernetes admission, not live AMD inference or GPU throughput.</p>
 <h2>Pod scaling and node capacity are different control loops</h2>
 <p>KEDA decides how many model pods are needed. A cloud or bare-metal capacity
 provider decides whether nodes exist to run pending pods. Keeping those loops
@@ -105,6 +116,99 @@ curl<span class="w"> </span>-H<span class="w"> </span><span class="s1">&#39;Host
 make<span class="w"> </span>kind-down
 </code></pre></div>
 
+<h2>Install the controller without a complete platform</h2>
+<p>You do not need Kafka, Slack, GPUs, KEDA or Cilium to try the CPU-only controller
+examples. Those integrations become prerequisites only when their features are
+enabled. Choose <strong>one</strong> controller installation method per cluster.</p>
+<p>For an existing Kubernetes cluster, clone the repository and install the Helm
+chart with its shared Gateway disabled:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/model-fleet-operator.git
+<span class="nb">cd</span><span class="w"> </span>model-fleet-operator
+helm<span class="w"> </span>upgrade<span class="w"> </span>--install<span class="w"> </span>model-fleet<span class="w"> </span>charts/model-fleet-operator<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--namespace<span class="w"> </span>model-fleet-system<span class="w"> </span>--create-namespace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--set<span class="w"> </span>gateway.enabled<span class="o">=</span><span class="nb">false</span><span class="w"> </span>--wait
+kubectl<span class="w"> </span>create<span class="w"> </span>namespace<span class="w"> </span>models
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>config/olm/examples.yaml
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>rollout<span class="w"> </span>status<span class="w"> </span>deployment/model-echo
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span><span class="nv">condition</span><span class="o">=</span><span class="nb">complete</span><span class="w"> </span>job/cpu-smoke-test<span class="w"> </span>--timeout<span class="o">=</span>5m
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>get<span class="w"> </span>inferenceservices,trainingruns,datasets,agentregistrations
+</code></pre></div>
+
+<p>The chart needs its configured controller image to be publicly available or
+accessible through your image-pull credentials. See the
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/installation.rst">installation documentation</a>
+for Kubernetes prerequisites and optional integrations.</p>
+<p>The OLM alternative targets Kubernetes 1.34+ with <strong>classic OLM</strong> installed in
+namespace <code>olm</code>. Once the verified v0.1.0 release is available, its <code>install.yaml</code>
+asset installs the versioned project catalog, OperatorGroup and Subscription:</p>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>https://github.com/sqe/model-fleet-operator/releases/download/v0.1.0/install.yaml
+kubectl<span class="w"> </span>-n<span class="w"> </span>model-fleet-system<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span>create<span class="w"> </span>csv/model-fleet-operator.v0.1.0<span class="w"> </span>--timeout<span class="o">=</span>5m
+kubectl<span class="w"> </span>-n<span class="w"> </span>model-fleet-system<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--for<span class="o">=</span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.status.phase}&#39;</span><span class="o">=</span>Succeeded<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>csv/model-fleet-operator.v0.1.0<span class="w"> </span>--timeout<span class="o">=</span>5m
+</code></pre></div>
+
+<p>This project catalog is <strong>not</strong> an OperatorHub listing. The OLM package installs
+the controller and four CRDs, not Slack/Kafka, the agent supervisor, model
+gateway, or <code>AgentTask</code>. Use Helm for those optional companions; never install
+a second controller alongside the OLM installation.</p>
+<h2>What the controller actually creates</h2>
+<p>The CPU example is deliberately small enough to inspect:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fleet.sqe.io/v1alpha1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">InferenceService</span>
+<span class="nt">metadata</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model-echo</span>
+<span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">models</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="nv">local-smoke-test</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">container</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="nv">ealen/echo-server</span><span class="p p-Indicator">:</span><span class="nv">0.9.2</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">80</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="nv">80</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="nv">false</span><span class="p p-Indicator">}</span>
+</code></pre></div>
+
+<p>It produces a <code>model-echo</code> Deployment and Service. A <code>TrainingRun</code> named
+<code>cpu-smoke-test</code> produces a Job with that name. The Dataset and AgentRegistration
+examples register metadata: the placeholder S3 URI is not downloaded, and an
+agent endpoint does not cause an agent to be deployed.</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Reconciled artifact or status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InferenceService</td>
+<td>Deployment, Service, observed readiness; optional KEDA scaler and HTTPRoute</td>
+</tr>
+<tr>
+<td>TrainingRun</td>
+<td>Job, completion/failure status, dataset-version and access checks</td>
+</tr>
+<tr>
+<td>Dataset</td>
+<td>Immutable version metadata, classification, owner and ServiceAccount allowlist</td>
+</tr>
+<tr>
+<td>AgentRegistration</td>
+<td>Registered Agent Card; optional replica management of an explicitly annotated existing Deployment</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>get<span class="w"> </span>deployment<span class="w"> </span>model-echo<span class="w"> </span>-o<span class="w"> </span>yaml
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>get<span class="w"> </span>service<span class="w"> </span>model-echo<span class="w"> </span>-o<span class="w"> </span>yaml
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>logs<span class="w"> </span>job/cpu-smoke-test
+kubectl<span class="w"> </span>-n<span class="w"> </span>models<span class="w"> </span>port-forward<span class="w"> </span>service/model-echo<span class="w"> </span><span class="m">18080</span>:80
+<span class="c1"># In another terminal:</span>
+curl<span class="w"> </span>http://127.0.0.1:18080/olm-smoke
+</code></pre></div>
+
+<p>In the local OLM verification, the training resource reached <code>Succeeded</code>, both
+metadata resources reached <code>Registered</code>, and inference returned to <code>Ready</code>
+after suspension and resumption. The HTTP echo response contained
+<code>http.originalUrl: /olm-smoke</code> and <code>environment.MODEL_NAME: local-smoke-test</code>.
+These are controller-and-network checks, not a claim that an LLM ran on a GPU.</p>
 <h2>The agent and operations control plane</h2>
 <p>The optional registry persists Agent Cards as <code>AgentRegistration</code> resources.
 The supervisor resolves an exact skill or asks an allowlisted LLM gateway to
@@ -123,6 +227,35 @@ so the reporting path presents them separately instead of adding them into a
 misleading total. Grafana snapshots can stream to Slack without writing PNGs to
 the bot filesystem.</p>
 <h2>Concrete Qwen patterns</h2>
+<p>Apple Silicon development follows a separate execution boundary: MLX runs
+natively on macOS, because Linux kind nodes cannot access Metal. An allowlisted
+gateway route can target <code>host.docker.internal</code> while Kubernetes inference
+routes target ordinary Services. The operator does not manage the native MLX
+process. The
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/ACCELERATOR_INFERENCE.md">accelerator guide</a>
+includes the guarded launcher and Helm values.</p>
+<p>Existing secured OpenAI-compatible endpoints on Windows or phones can also be
+explicit gateway routes. This is model-neutral: Gemma, Qwen, Phi, SmolLM and
+small Llama variants are candidate families, subject to device memory, runtime,
+quantization and model licensing—not a claim that every model works on every
+phone. The
+<a href="https://github.com/sqe/model-fleet-operator/blob/main/examples/phone-slm-values.yaml">phone SLM values example</a>
+routes to an existing endpoint; it does not install an app or manage the device.
+A browser inference worker does not automatically become an HTTP model server.</p>
+<p>The separate Open Compute companion explores opt-in browser/desktop workers,
+durable task leases and an adapter for existing Slurm clusters. It is not
+bundled with Model Fleet, does not turn phones into native Slurm nodes, and
+does not automatically bridge its jobs into Kubernetes custom resources.</p>
+<p>Gateway request/error counters and latency histograms carry a <code>runtime</code> label,
+so Grafana can distinguish MLX development traffic from Kubernetes model
+services. Token and estimated-cost counters use the upstream usage payload and
+configured prices, not a measurement of electrical consumption or a cloud bill.
+For example, Prometheus can query request rate by runtime:</p>
+<div class="highlight"><pre><span></span><code><span class="k">sum</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">runtime</span><span class="p">,</span><span class="w"> </span><span class="nv">result</span><span class="o">)</span><span class="w"> </span><span class="o">(</span>
+<span class="w">  </span><span class="kr">rate</span><span class="o">(</span><span class="nv">model_fleet_upstream_requests_total</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">)</span>
+<span class="o">)</span>
+</code></pre></div>
+
 <p>The examples include a quantized Qwen 27B inference/gateway profile and a
 Qwen3-VL image LoRA training shape. Quantization reduces weight memory but does
 not make KV cache, activations, runtime allocations, context length, or training
@@ -130,6 +263,27 @@ memory disappear. A 24 GiB target is a testable fit hypothesis; production
 capacity must be measured on the exact GPU, driver, serving build, sequence
 length, and concurrency. The operator captures those requirements without
 hard-coding one model family.</p>
+<h2>CI and release verification are part of the contract</h2>
+<p>Pull requests and main-branch changes run independent checks for:</p>
+<ul>
+<li>Python 3.11, 3.13 and 3.14 tests with coverage and JUnit artifacts;</li>
+<li>Ruff, ShellCheck and actionlint; Sphinx documentation and Python package builds;</li>
+<li>Helm profiles for kind, MicroK8s, AWS and GCP, plus optional companion routes;</li>
+<li>Go SDK race tests and vet, protobuf lint/generation and Terraform validation;</li>
+<li>native amd64/arm64 image builds and packaged-service import smoke tests; and</li>
+<li>a real CatalogSource/Subscription installation on kind/Kubernetes 1.34,
+  checking all four bundled CRDs across namespaces, training completion,
+  inference suspend/resume and an HTTP response through the generated Service.</li>
+</ul>
+<p>The release workflow reuses CI, builds multi-architecture controller, bundle
+and catalog images, then verifies anonymous pulls and installation through the
+published catalog before creating a GitHub alpha release. Release assets include
+Python distributions, the Helm archive, the OLM bundle archive, a digest-pinned
+installation manifest, image references and SHA-256 checksums. OLM diagnostics
+are retained when verification fails.</p>
+<p>This does not certify GPU throughput, live Slack/Kafka delivery, cloud machine
+provisioning or every optional integration. OperatorHub acceptance is a separate
+upstream review, not an automatic consequence of a green release workflow.</p>
 <p>The result is a control plane with clear boundaries: model authors declare
 workloads and immutable inputs, Kubernetes reconciles pods and Jobs, KEDA owns
 replica demand, infrastructure owns nodes, Cilium owns ingress, and observability

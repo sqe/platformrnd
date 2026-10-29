@@ -40,12 +40,19 @@ the custom resource.</p>
 Kubernetes APIs on supported managed or self-hosted clusters; Proxmox and
 MicroK8s are optional infrastructure, not prerequisites. The current minimum
 Kubernetes version is 1.34. I use it in local cluster setups and on Kind.</p>
-<p><strong>Release scope:</strong> the public v0.1.0 alpha OLM catalog is installation-tested.
-The new agent-execution pipeline described below is prepared for the next
-source/release update; it is not in the published v0.1.0 image. The OperatorHub
-submission is under community review, not an available listing. The custom
-OLM catalog works independently of that review.</p>
+<p><strong>Release status:</strong> v0.2.0 includes the agent-execution pipeline and MCP demo
+described below. Its Go and Kopf E2E checks passed and its images and OLM
+catalog have been published; the <a href="https://github.com/sqe/cube-microk8s-operator/actions/runs/39071332719">release workflow</a>
+failed OLM verification because its subscription requested v0.1.0 from the
+v0.2.0-only catalog. No GitHub prerelease was created. Until a corrected release
+passes verification, the installation instructions below use the
+installation-tested v0.1.0 alpha catalog, which does not include agent-execution
+ingestion. The OperatorHub submission is under community review, not an
+available listing; the custom OLM catalog works independently of that review.</p>
 <p><img alt="Cube Core MicroK8s Operator architecture" src="https://platformrnd.com/images/cube-microk8s-operator.png"></p>
+<p>RustFS is the S3-compatible object-storage option shown in the diagram. It is
+provisioned separately; the operator references storage rather than deploying
+RustFS itself.</p>
 <h2>Why an operator instead of deployment YAML</h2>
 <p>A static manifest can start Cube, but it does not provide a durable ownership
 model. The operator validates referenced configuration, applies owner
@@ -507,7 +514,7 @@ does not claim those hosted features are part of open-source Cube Core.</p>
 <p>Before production use, test CRD upgrades, restore procedures, controller
 failover, Cube Store recovery, database limits, and model changes under the
 target workload. “Production-oriented” means these controls are represented;
-it does not replace environment-specific qualification. The next catalog is
+it does not replace environment-specific qualification. The v0.2.0 catalog is
 for fresh installations, not an advertised automatic upgrade from v0.1.0.</p>
 <p>This is an independent community project, not an official Cube product or a
 claim of Cube endorsement. It deploys upstream <a href="https://github.com/cube-js/cube">Cube</a>

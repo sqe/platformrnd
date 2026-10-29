@@ -30,7 +30,7 @@
         <span>September 02, 2026</span>
 <span> • Open Source Projects</span>    </div>
 
-    <p>The <a href="https://github.com/sqe/agentic-kubernetes-platform">Agentic Kubernetes Platform</a>
+    <p>The <a href="https://github.com/sqe/agentic-kubernetes-platform-community">Agentic Kubernetes Platform</a>
 is an Apache-2.0 reference architecture for running specialist agents, model
 inference, and training without tying the application contract to one cloud. It
 uses the same agent protocol on AWS EKS and Proxmox-hosted Kubernetes; only the
@@ -136,8 +136,8 @@ is appropriately provisioned; the project does not claim storage eliminates
 model-loading time.</p>
 <h2>Reproduce it locally</h2>
 <p>Docker Compose is the shortest application-level path:</p>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/agentic-kubernetes-platform.git
-<span class="nb">cd</span><span class="w"> </span>agentic-kubernetes-platform
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/agentic-kubernetes-platform-community.git
+<span class="nb">cd</span><span class="w"> </span>agentic-kubernetes-platform-community
 make<span class="w"> </span>install<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span><span class="nb">test</span>
 docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
 open<span class="w"> </span>http://localhost:8002/dashboard
@@ -159,9 +159,9 @@ stated scope. Runtime evidence should include request IDs, Kafka correlation,
 Kubernetes status, redacted Hubble flows, and timestamps—not unsupported claims
 about production availability, throughput, or savings.</p>
 <p><strong>Explore the project:</strong>
-<a href="https://github.com/sqe/agentic-kubernetes-platform">GitHub repository</a> ·
-<a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ARCHITECTURE.md">Architecture</a> ·
-<a href="https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ADDING_AGENTS.md">Adding an agent</a></p>
+<a href="https://github.com/sqe/agentic-kubernetes-platform-community">GitHub repository</a> ·
+<a href="https://github.com/sqe/agentic-kubernetes-platform-community/blob/main/docs/ARCHITECTURE.md">Architecture</a> ·
+<a href="https://github.com/sqe/agentic-kubernetes-platform-community/blob/main/docs/ADDING_AGENTS.md">Adding an agent</a></p>
     <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
         <span class="tag">kubernetes</span>
         <span class="tag">agents</span>
