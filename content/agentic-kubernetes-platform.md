@@ -5,7 +5,7 @@ Tags: kubernetes, agents, kafka, cilium, gpu, knowledge-graph, aws, proxmox
 Slug: agentic-kubernetes-platform
 Summary: A deep dive into an event-driven, portable agent platform that combines Kafka coordination, Cilium networking, GPU model serving, governed analytics, knowledge graphs, and reproducible AWS, Proxmox, and Kind deployment paths.
 
-The [Agentic Kubernetes Platform](https://github.com/sqe/agentic-kubernetes-platform)
+The [Agentic Kubernetes Platform](https://github.com/sqe/agentic-kubernetes-platform-community)
 is an Apache-2.0 reference architecture for running specialist agents, model
 inference, and training without tying the application contract to one cloud. It
 uses the same agent protocol on AWS EKS and Proxmox-hosted Kubernetes; only the
@@ -104,8 +104,8 @@ model-loading time.
 Docker Compose is the shortest application-level path:
 
 ```bash
-git clone https://github.com/sqe/agentic-kubernetes-platform.git
-cd agentic-kubernetes-platform
+git clone https://github.com/sqe/agentic-kubernetes-platform-community.git
+cd agentic-kubernetes-platform-community
 make install && make test
 docker compose up --build
 open http://localhost:8002/dashboard
@@ -130,6 +130,6 @@ Kubernetes status, redacted Hubble flows, and timestamps—not unsupported claim
 about production availability, throughput, or savings.
 
 **Explore the project:**
-[GitHub repository](https://github.com/sqe/agentic-kubernetes-platform) ·
-[Architecture](https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ARCHITECTURE.md) ·
-[Adding an agent](https://github.com/sqe/agentic-kubernetes-platform/blob/main/docs/ADDING_AGENTS.md)
+[GitHub repository](https://github.com/sqe/agentic-kubernetes-platform-community) ·
+[Architecture](https://github.com/sqe/agentic-kubernetes-platform-community/blob/main/docs/ARCHITECTURE.md) ·
+[Adding an agent](https://github.com/sqe/agentic-kubernetes-platform-community/blob/main/docs/ADDING_AGENTS.md)
