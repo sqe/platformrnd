@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Platform Research And Development - Open Source Projects</title><link href="https://platformrnd.com/" rel="alternate"/><link href="https://platformrnd.com/feeds/open-source-projects.atom.xml" rel="self"/><id>https://platformrnd.com/</id><updated>2026-10-18T00:00:00-07:00</updated><entry><title>Building an Agentic Kubernetes Platform That Runs Anywhere</title><link href="https://platformrnd.com/blog/agentic-kubernetes-platform.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/agentic-kubernetes-platform.html</id><summary type="html">&lt;p&gt;A deep dive into an event-driven, portable agent platform that combines Kafka coordination, Cilium networking, GPU model serving, governed analytics, knowledge graphs, and reproducible AWS, Proxmox, and Kind deployment paths.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/agentic-kubernetes-platform-community"&gt;Agentic Kubernetes Platform&lt;/a&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Platform Research And Development - Open Source Projects</title><link href="https://platformrnd.com/" rel="alternate"/><link href="https://platformrnd.com/feeds/open-source-projects.atom.xml" rel="self"/><id>https://platformrnd.com/</id><updated>2026-10-29T00:00:00-07:00</updated><entry><title>Building an Agentic Kubernetes Platform That Runs Anywhere</title><link href="https://platformrnd.com/blog/agentic-kubernetes-platform.html" rel="alternate"/><published>2026-09-02T00:00:00-07:00</published><updated>2026-09-02T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2026-09-02:/blog/agentic-kubernetes-platform.html</id><summary type="html">&lt;p&gt;A deep dive into an event-driven, portable agent platform that combines Kafka coordination, Cilium networking, GPU model serving, governed analytics, knowledge graphs, and reproducible AWS, Proxmox, and Kind deployment paths.&lt;/p&gt;</summary><content type="html">&lt;p&gt;The &lt;a href="https://github.com/sqe/agentic-kubernetes-platform-community"&gt;Agentic Kubernetes Platform&lt;/a&gt;
 is an Apache-2.0 reference architecture for running specialist agents, model
 inference, and training without tying the application contract to one cloud. It
 uses the same agent protocol on AWS EKS and Proxmox-hosted Kubernetes; only the
@@ -888,8 +888,217 @@ custom-resource contract.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Explore the project:&lt;/strong&gt;
 &lt;a href="https://github.com/sqe/model-fleet-operator"&gt;GitHub repository&lt;/a&gt; ·
 &lt;a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/GPU_CAPACITY.md"&gt;GPU capacity&lt;/a&gt; ·
-&lt;a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/AGENT_CONTROL_PLANE.md"&gt;Agent control plane&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="gpu"/><category term="inference"/><category term="training"/><category term="keda"/><category term="cilium"/><category term="slack"/><category term="kafka"/></entry><entry><title>Articles</title><link href="https://platformrnd.com/articles.html" rel="alternate"/><published>2025-11-23T00:00:00-08:00</published><updated>2025-11-23T00:00:00-08:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-23:/articles.html</id><content type="html"/><category term="Open Source Projects"/></entry><entry><title>AQE</title><link href="https://platformrnd.com/blog/aqe.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/aqe.html</id><content type="html">&lt;p&gt;MLOps-driven agentic platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled Playwright test generation. Achieves reproducible end-to-end test automation for complex web applications.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Repository&lt;/strong&gt;: &lt;a href="https://github.com/sqe/AQE"&gt;sqe/AQE&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="agentic"/><category term="quality engineering"/><category term="ai"/><category term="testing"/><category term="mlops"/></entry><entry><title>esddns</title><link href="https://platformrnd.com/blog/esddns.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/esddns.html</id><content type="html">&lt;p&gt;Enterprise-scale DNS management and distributed naming service. Provides reliable, scalable DNS resolution with support for complex network topologies and multi-tenant environments.&lt;/p&gt;
+&lt;a href="https://github.com/sqe/model-fleet-operator/blob/main/docs/AGENT_CONTROL_PLANE.md"&gt;Agent control plane&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="operator"/><category term="gpu"/><category term="inference"/><category term="training"/><category term="keda"/><category term="cilium"/><category term="slack"/><category term="kafka"/></entry><entry><title>Articles</title><link href="https://platformrnd.com/articles.html" rel="alternate"/><published>2025-11-23T00:00:00-08:00</published><updated>2025-11-23T00:00:00-08:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-23:/articles.html</id><content type="html"/><category term="Open Source Projects"/></entry><entry><title>AQE Automata: From Agent Contracts to Verified Regression Tests</title><link href="https://platformrnd.com/blog/aqe.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2026-10-29T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/aqe.html</id><summary type="html">&lt;p&gt;A technical deep dive into AQE Automata: durable Temporal workflows, contract-grounded test generation, independent review, bounded execution and repair, and versioned regression catalogs backed by traceable evidence.&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;a href="https://github.com/sqe/AQE"&gt;AQE — Agentic Quality Engineering&lt;/a&gt; is a compound
+agent system for turning declared behavior into executable, reviewable tests.
+Its control plane, &lt;strong&gt;AQE Automata&lt;/strong&gt;, coordinates discovery, generation, review,
+execution, diagnosis, and bounded repair. The useful output is not an LLM's
+opinion that a system works: it is a test result linked to its source, target,
+grounding evidence, and execution attempts.&lt;/p&gt;
+&lt;p&gt;That distinction matters for AI-native systems. An agent may advertise a skill,
+return a convincing answer, and still violate its contract. A generated test can
+also pass for the wrong reason. AQE puts deterministic checks, an independent
+review boundary, and a real test runtime between generation and publication.&lt;/p&gt;
+&lt;h2&gt;Watch a full execution run&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href="https://youtu.be/A5VcteEc_jE"&gt;Watch the full AQE execution-run demo on YouTube&lt;/a&gt;.&lt;/strong&gt;
+The demo is a visual walkthrough with light background music, no voice
+narration, and no captions.
+The recording accompanies this architecture walkthrough; it is a demonstration
+of a particular run, not a benchmark or a guarantee that every target will pass.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://youtu.be/A5VcteEc_jE"&gt;&lt;img alt="AQE Automata Observe view with agent handoffs and test activity" src="https://platformrnd.com/images/aqe-automata.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The Observe interface connects workflow activity, test nodes, target versions,
+and Temporal history. The counters and health labels belong to the captured
+environment, not to a live status feed on this page.&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;The architecture: three distinct planes&lt;/h2&gt;
+&lt;p&gt;AQE separates &lt;strong&gt;coordination&lt;/strong&gt;, &lt;strong&gt;execution&lt;/strong&gt;, and &lt;strong&gt;evidence&lt;/strong&gt;. A dashboard or
+API client starts work directly through the Workflow API. A larger agent
+platform can instead call AQE through its Bring Your Own Agent (BYOA) adapter.
+Both entry paths lead to the same durable workflow rather than separate testing
+implementations.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://platformrnd.com/images/aqe-architecture.png"&gt;&lt;img alt="Detailed AQE Automata architecture: callers, Temporal stages, evidence storage, and publication gates" src="https://platformrnd.com/images/aqe-architecture.png"&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Open the diagram at full size to inspect the architecture, gates, and feedback
+paths. Dashed lines group storage and telemetry relationships; required state
+and artifact writes are not optional merely because they are drawn with dashed
+connectors.&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Workflow API and Temporal&lt;/strong&gt; own run identity, stage ordering, timeouts,
+  bounded retries, and fleet child workflows. A completed workflow is not
+  necessarily a passing test.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Generation and Quality Oracle&lt;/strong&gt; ground candidates in declared behavior and
+  review their meaning before execution. Model approval does not replace a
+  real test run.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;HTTP and browser executors&lt;/strong&gt; apply the static gate, run pytest, collect
+  results, and optionally repair. A sandbox does not remove the need for
+  infrastructure security controls.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PostgreSQL and RustFS&lt;/strong&gt; retain run state, provenance, source, and execution
+  evidence. Retention is not automatic permission to publish that material.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub catalogs&lt;/strong&gt; preserve promoted tests and confirmed defect reproducers
+  against identified target versions. Catalog publication is not production
+  release approval.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Kafka is the platform boundary; Temporal owns the run&lt;/h3&gt;
+&lt;p&gt;The BYOA adapter accepts correlated JSON-RPC tasks on &lt;code&gt;tasks.aqe&lt;/code&gt; and returns
+results on &lt;code&gt;results.aqe&lt;/code&gt;. It publishes the result before committing the consumed
+offset. This is an &lt;strong&gt;at-least-once&lt;/strong&gt; integration: replay is possible, and request
+identity and downstream idempotency still matter. Kafka is not AQE's internal
+generate–execute–repair state machine.&lt;/p&gt;
+&lt;p&gt;Temporal owns that state machine. Specialist calls are activities with explicit
+timeouts and retry policies. The implementation deliberately gives generation a
+single activity attempt because it persists a new artifact and does not yet
+offer an idempotency key. Retrying a read and retrying an operation that creates
+new evidence are different engineering decisions.&lt;/p&gt;
+&lt;p&gt;Fleet campaigns use child QE workflows and bound requested concurrency to a
+maximum of five. Results remain attributable to individual targets rather than
+being collapsed into a single ambiguous fleet verdict. Workflow patch markers
+preserve replay compatibility as gates evolve; historical workflow executions
+should not be mistaken for runs of the latest policy.&lt;/p&gt;
+&lt;h2&gt;1. Discover behavior before generating tests&lt;/h2&gt;
+&lt;p&gt;For an agent target, discovery reads its Agent Card, skills, invocation
+contracts, version, and executable scenarios. The important question is not
+just “does an endpoint respond?” It is “what observable outcome does this
+particular skill promise, with what input and evaluation dimensions?”&lt;/p&gt;
+&lt;p&gt;AQE distinguishes an executable scenario from missing requirements. When every
+discovered scenario needs a contract clarification, the workflow returns
+&lt;code&gt;REQUIREMENTS_NEEDED&lt;/code&gt; with zero executed tests and does not generate a suite.
+It should not invent a payload, endpoint, or expected answer to fill the gap.
+When only some scenarios are executable, those can proceed while the missing
+requirements remain explicit.&lt;/p&gt;
+&lt;p&gt;Optional GitHub grounding is a separate read-only boundary. The caller supplies
+an allowlisted repository and pinned source reference. Source analysis augments
+the generation request; it does not turn arbitrary repository access into an
+implicit authority to write or deploy code.&lt;/p&gt;
+&lt;h2&gt;2. Generate an immutable candidate, not an automatic verdict&lt;/h2&gt;
+&lt;p&gt;Generation combines supplied requirements, applicable agent ontology rules,
+scenario context, and product knowledge retrieved through Qdrant. Product RAG
+is optional: without an active product-knowledge artifact, generation can still
+use the declared scenario and ontology. Provenance should distinguish these
+cases instead of pretending every test has retrieved product evidence.&lt;/p&gt;
+&lt;p&gt;The system also has a deterministic declared-contract compiler path for
+supported executable contracts. Not every candidate therefore needs to be
+invented by a model. The workflow records the generation method and uses it
+when deciding whether an Oracle-feedback regeneration is appropriate.&lt;/p&gt;
+&lt;p&gt;Before a candidate consumes review or execution resources, the static gate
+checks its Python structure and testing policy. Tests should express atomic,
+observable outcomes, use fixtures for shared setup, map to required skills and
+dimensions, and avoid fixed sleeps, swallowed failures, or conditional assertion
+skipping. Browser tests favor role, label, and test-id locators with explicit
+state waits.&lt;/p&gt;
+&lt;p&gt;Generated source is stored as an immutable artifact in RustFS, with the task and
+grounding metadata recorded in PostgreSQL. The artifact identity matters: review
+must refer to the candidate that will actually execute, not a mutable text box
+that can change after approval.&lt;/p&gt;
+&lt;h2&gt;3. Use the Quality Oracle as a fail-closed review gate&lt;/h2&gt;
+&lt;p&gt;The Quality Oracle reviews the candidate against requirements, ontology,
+retrieved evidence, skill coverage, and risk policy. It returns structured
+approval or rejection with issues and grounding citations. An unavailable or
+non-approving review does not silently authorize execution.&lt;/p&gt;
+&lt;p&gt;For model-generated candidates, the current workflow permits one regeneration
+using structured Oracle feedback, then reviews the new candidate. A second
+rejection stops the workflow. The deterministic declared-contract path gets one
+review attempt rather than that model-feedback loop.&lt;/p&gt;
+&lt;p&gt;There are two different mechanisms here: the AST gate checks structural rules;
+the Oracle reviews meaning. Neither proves the target's behavior. Even an
+independent reviewer can be wrong or share a blind spot with the generator, so
+actual execution remains necessary.&lt;/p&gt;
+&lt;h2&gt;4. Execute in the correct runtime and read the real result&lt;/h2&gt;
+&lt;p&gt;AQE separates browser-free HTTP, Agent Card, and A2A testing from website
+journeys. The agent executor does not need a Chromium installation. The website
+executor supplies Playwright Chromium in its own runtime. Requests are routed
+by test type, and an executor rejects a persisted task for the wrong mode.&lt;/p&gt;
+&lt;p&gt;Before each execution, the runtime applies the static quality gate again. It
+writes the candidate into a temporary workspace, starts &lt;code&gt;python -m pytest&lt;/code&gt;,
+captures stdout and stderr, and requests JUnit XML. Resource limits, a restricted
+environment, and a hard timeout bound the subprocess. Deployment-level
+permissions and network isolation remain part of the security boundary: a
+temporary directory alone is not a complete untrusted-code sandbox.&lt;/p&gt;
+&lt;p&gt;The subprocess exit status determines execution success; JUnit supplies counts
+for passed, failed, errored, and skipped tests. AQE does not search console text
+for a reassuring word and call that a pass.&lt;/p&gt;
+&lt;p&gt;This produces an important distinction for API consumers: &lt;strong&gt;Temporal
+&lt;code&gt;COMPLETED&lt;/code&gt; means orchestration finished&lt;/strong&gt;. Inspect &lt;code&gt;result.successful&lt;/code&gt;, the
+failure/error counts, and the retained evidence before treating the run as a
+successful verification. A run can finish durably with a failed test result.&lt;/p&gt;
+&lt;h2&gt;5. Repair is bounded, and a green rerun is not the whole story&lt;/h2&gt;
+&lt;p&gt;Execution repair is separate from pre-execution Oracle feedback. When enabled
+and configured, the repair client receives the failing source and execution
+result. &lt;code&gt;MAX_REPAIR_ATTEMPTS&lt;/code&gt; defaults to two repairs after the initial run.
+Repair can stop earlier when no model is configured, no candidate is returned,
+or an attempt succeeds. Every new candidate goes through the static gate and
+real execution again.&lt;/p&gt;
+&lt;p&gt;The repair prompt explicitly forbids weakening, deleting, or changing the
+intended observable behavior. That is a policy, not a mathematical guarantee of
+semantic equivalence. The current execution loop does not repeat the full
+Quality Oracle review after each repair. Review the original and repaired
+artifacts and the expected outcome when the risk warrants it; “the model made
+the test green” is not sufficient evidence of correctness.&lt;/p&gt;
+&lt;p&gt;An ordinary failing run is not automatically a product defect. It may expose a
+bad generated test, missing credentials, an unavailable dependency, an execution
+error, or a genuine assertion failure. Keeping these possibilities distinct is
+more useful than making every red result look like a discovered bug.&lt;/p&gt;
+&lt;h2&gt;6. Separate operational evidence from the regression catalog&lt;/h2&gt;
+&lt;p&gt;PostgreSQL and RustFS form the operational evidence layer. PostgreSQL keeps
+queryable run metadata, target identity, outcomes, and catalog links. RustFS
+keeps generated and repaired source and large artifacts. Failed and unpromoted
+candidates still have an evidence trail.&lt;/p&gt;
+&lt;p&gt;GitHub is a narrower, reviewable publication boundary, enabled by catalog
+configuration and a scoped token:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Validated tests&lt;/strong&gt; enter &lt;code&gt;generated-tests/&lt;/code&gt; only after the execution quality
+  gate and pytest pass. Paths identify runtime, test layer, target agent, and
+  release version, with a source revision when supplied.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Confirmed defect reproducers&lt;/strong&gt; enter &lt;code&gt;generated-findings/&lt;/code&gt; only after
+  explicit confirmation with non-empty evidence. The confirmation endpoint
+  reruns the persisted test without repair and requires assertion failures with
+  zero execution or collection errors.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Test defects, environment failures, and untriaged results&lt;/strong&gt; remain
+  operational evidence rather than being published as product defects.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The generated-catalog workflow then continuously tests the identified target
+version. A confirmed-defect reproducer has a deliberately different expectation
+from a green regression test: it should continue to reproduce until the defect
+is fixed and its catalog disposition is updated. CI also needs network access
+to the target; private endpoints may require a properly scoped self-hosted
+runner. Sensitive scenarios belong in a private catalog.&lt;/p&gt;
+&lt;p&gt;Passing execution and successful publication are distinct outcomes. A run can
+pass while catalog credentials are absent or a GitHub write fails; inspect
+&lt;code&gt;test_catalog&lt;/code&gt; and &lt;code&gt;test_catalog_error&lt;/code&gt; instead of assuming a green runtime
+result created a repository artifact.&lt;/p&gt;
+&lt;h2&gt;Observe the handoffs without confusing telemetry with truth&lt;/h2&gt;
+&lt;p&gt;AQE's Observe view connects directed agent handoffs, generated test nodes,
+target relationships, and final states, with separate graph and 3D views. The
+Temporal history explains the durable sequence; PostgreSQL and object artifacts
+explain what was tested and what happened.&lt;/p&gt;
+&lt;p&gt;Graph-event delivery is best-effort. The implementation catches telemetry
+delivery errors so the live graph does not become a workflow dependency. A
+missing animation is not itself a failed test, just as a healthy dashboard
+badge is not itself a passing one.&lt;/p&gt;
+&lt;p&gt;The wider agent fleet includes capture, change detection, knowledge ingestion,
+source analysis, artifact management, and diagnostics. Experimental agent and
+dbt builders produce review-required artifacts, not automatically deployed
+services. They should not be conflated with the verified-test publication path.&lt;/p&gt;
+&lt;h2&gt;Run it and inspect your own evidence&lt;/h2&gt;
+&lt;p&gt;The repository's local entry point is Docker Compose:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;git&lt;span class="w"&gt; &lt;/span&gt;clone&lt;span class="w"&gt; &lt;/span&gt;https://github.com/sqe/AQE.git
+&lt;span class="nb"&gt;cd&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;AQE
+docker&lt;span class="w"&gt; &lt;/span&gt;compose&lt;span class="w"&gt; &lt;/span&gt;up&lt;span class="w"&gt; &lt;/span&gt;--build
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Open the dashboard on port 3000, the workflow API documentation on port 8008,
+and Temporal UI on port 8233. Configure an appropriate model provider before
+requesting model-generated tests, and use only targets you are authorized to
+exercise. The dashboard provides agent and website examples; deployment and
+provider configuration are documented in the repository.&lt;/p&gt;
+&lt;p&gt;For a meaningful result, retain the workflow ID, task ID, target version,
+review evidence, source artifacts, JUnit summary, repair attempts, and any
+catalog URL. Source checks, the architecture diagram, and a demo recording are
+useful references, but none replaces executing the scenario in your own
+environment. No throughput, availability, or cost benchmark is claimed here.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Explore the implementation:&lt;/strong&gt;
+&lt;a href="https://github.com/sqe/AQE"&gt;Repository&lt;/a&gt; ·
+&lt;a href="https://youtu.be/A5VcteEc_jE"&gt;Full execution demo&lt;/a&gt; ·
+&lt;a href="https://github.com/sqe/AQE/blob/main/docs/architecture.md"&gt;Architecture and operating rules&lt;/a&gt; ·
+&lt;a href="https://github.com/sqe/AQE/blob/main/docs/testing-agents.md"&gt;Agent testing runbook&lt;/a&gt; ·
+&lt;a href="https://github.com/sqe/AQE/blob/main/temporal_worker/workflow.py"&gt;Durable workflow&lt;/a&gt; ·
+&lt;a href="https://github.com/sqe/AQE/blob/main/agents/test_execution/app.py"&gt;Execution and repair&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="agentic"/><category term="quality engineering"/><category term="ai"/><category term="testing"/><category term="temporal"/><category term="rag"/><category term="playwright"/><category term="kubernetes"/></entry><entry><title>esddns</title><link href="https://platformrnd.com/blog/esddns.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/esddns.html</id><content type="html">&lt;p&gt;Enterprise-scale DNS management and distributed naming service. Provides reliable, scalable DNS resolution with support for complex network topologies and multi-tenant environments.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Repository&lt;/strong&gt;: &lt;a href="https://github.com/sqe/esddns"&gt;sqe/esddns&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="dns"/><category term="network"/><category term="distributed"/><category term="naming"/></entry><entry><title>fizmatmod</title><link href="https://platformrnd.com/blog/fizmatmod.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/fizmatmod.html</id><content type="html">&lt;p&gt;Physics and mathematical modeling library. Enables computational simulation of physical systems, providing tools for numerical analysis and physics-based modeling in scientific computing applications.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Repository&lt;/strong&gt;: &lt;a href="https://github.com/sqe/fizmatmod"&gt;sqe/fizmatmod&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="physics"/><category term="mathematics"/><category term="modeling"/><category term="simulation"/></entry><entry><title>robotics-k8s-infra</title><link href="https://platformrnd.com/blog/robotics-k8s-infra.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/robotics-k8s-infra.html</id><content type="html">&lt;p&gt;Production-grade platform for cloud/edge robotics integration. Features KubeEdge for edge computing, ROS2 middleware, ArgoCD for GitOps deployment, multi-domain DDS for distributed systems, eBPF-based networking with Cilium for UDP multicast discovery, CLI tools for edge node simulation and lifecycle management, and real-time metrics collection.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Repository&lt;/strong&gt;: &lt;a href="https://github.com/sqe/robotics-k8s-infra"&gt;sqe/robotics-k8s-infra&lt;/a&gt;&lt;/p&gt;</content><category term="Open Source Projects"/><category term="kubernetes"/><category term="robotics"/><category term="cloud"/><category term="edge"/><category term="platform"/><category term="argo"/></entry><entry><title>urlstatus</title><link href="https://platformrnd.com/blog/urlstatus.html" rel="alternate"/><published>2025-11-01T00:00:00-07:00</published><updated>2025-11-01T00:00:00-07:00</updated><author><name>Aziz Kurbanov</name></author><id>tag:platformrnd.com,2025-11-01:/blog/urlstatus.html</id><content type="html">&lt;p&gt;Distributed URL status monitoring and health-check service. Provides real-time endpoint monitoring, status aggregation, and alerting capabilities for infrastructure and service health tracking across heterogeneous environments.&lt;/p&gt;

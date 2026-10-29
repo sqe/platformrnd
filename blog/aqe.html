@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AQE - Platform Research And Development</title>
+    <title>AQE Automata: From Agent Contracts to Verified Regression Tests - Platform Research And Development</title>
     <meta name="description" content="Platform R&D - Open source projects and platform engineering by Aziz Kurbanov">
     <link rel="canonical" href="https://platformrnd.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,19 +25,231 @@
         </nav>
 
 <article class="page-content">
-    <h1>AQE</h1>
+    <h1>AQE Automata: From Agent Contracts to Verified Regression Tests</h1>
     <div class="post-meta">
         <span>November 01, 2025</span>
 <span> • Open Source Projects</span>    </div>
 
-    <p>MLOps-driven agentic platform orchestrating distributed AI agents for web state capture, LLM-powered change detection, and RAG-enabled Playwright test generation. Achieves reproducible end-to-end test automation for complex web applications.</p>
-<p><strong>Repository</strong>: <a href="https://github.com/sqe/AQE">sqe/AQE</a></p>
+    <p><a href="https://github.com/sqe/AQE">AQE — Agentic Quality Engineering</a> is a compound
+agent system for turning declared behavior into executable, reviewable tests.
+Its control plane, <strong>AQE Automata</strong>, coordinates discovery, generation, review,
+execution, diagnosis, and bounded repair. The useful output is not an LLM's
+opinion that a system works: it is a test result linked to its source, target,
+grounding evidence, and execution attempts.</p>
+<p>That distinction matters for AI-native systems. An agent may advertise a skill,
+return a convincing answer, and still violate its contract. A generated test can
+also pass for the wrong reason. AQE puts deterministic checks, an independent
+review boundary, and a real test runtime between generation and publication.</p>
+<h2>Watch a full execution run</h2>
+<p><strong><a href="https://youtu.be/A5VcteEc_jE">Watch the full AQE execution-run demo on YouTube</a>.</strong>
+The demo is a visual walkthrough with light background music, no voice
+narration, and no captions.
+The recording accompanies this architecture walkthrough; it is a demonstration
+of a particular run, not a benchmark or a guarantee that every target will pass.</p>
+<p><a href="https://youtu.be/A5VcteEc_jE"><img alt="AQE Automata Observe view with agent handoffs and test activity" src="https://platformrnd.com/images/aqe-automata.png"></a></p>
+<p><em>The Observe interface connects workflow activity, test nodes, target versions,
+and Temporal history. The counters and health labels belong to the captured
+environment, not to a live status feed on this page.</em></p>
+<h2>The architecture: three distinct planes</h2>
+<p>AQE separates <strong>coordination</strong>, <strong>execution</strong>, and <strong>evidence</strong>. A dashboard or
+API client starts work directly through the Workflow API. A larger agent
+platform can instead call AQE through its Bring Your Own Agent (BYOA) adapter.
+Both entry paths lead to the same durable workflow rather than separate testing
+implementations.</p>
+<p><a href="https://platformrnd.com/images/aqe-architecture.png"><img alt="Detailed AQE Automata architecture: callers, Temporal stages, evidence storage, and publication gates" src="https://platformrnd.com/images/aqe-architecture.png"></a></p>
+<p><em>Open the diagram at full size to inspect the architecture, gates, and feedback
+paths. Dashed lines group storage and telemetry relationships; required state
+and artifact writes are not optional merely because they are drawn with dashed
+connectors.</em></p>
+<ul>
+<li><strong>Workflow API and Temporal</strong> own run identity, stage ordering, timeouts,
+  bounded retries, and fleet child workflows. A completed workflow is not
+  necessarily a passing test.</li>
+<li><strong>Generation and Quality Oracle</strong> ground candidates in declared behavior and
+  review their meaning before execution. Model approval does not replace a
+  real test run.</li>
+<li><strong>HTTP and browser executors</strong> apply the static gate, run pytest, collect
+  results, and optionally repair. A sandbox does not remove the need for
+  infrastructure security controls.</li>
+<li><strong>PostgreSQL and RustFS</strong> retain run state, provenance, source, and execution
+  evidence. Retention is not automatic permission to publish that material.</li>
+<li><strong>GitHub catalogs</strong> preserve promoted tests and confirmed defect reproducers
+  against identified target versions. Catalog publication is not production
+  release approval.</li>
+</ul>
+<h3>Kafka is the platform boundary; Temporal owns the run</h3>
+<p>The BYOA adapter accepts correlated JSON-RPC tasks on <code>tasks.aqe</code> and returns
+results on <code>results.aqe</code>. It publishes the result before committing the consumed
+offset. This is an <strong>at-least-once</strong> integration: replay is possible, and request
+identity and downstream idempotency still matter. Kafka is not AQE's internal
+generate–execute–repair state machine.</p>
+<p>Temporal owns that state machine. Specialist calls are activities with explicit
+timeouts and retry policies. The implementation deliberately gives generation a
+single activity attempt because it persists a new artifact and does not yet
+offer an idempotency key. Retrying a read and retrying an operation that creates
+new evidence are different engineering decisions.</p>
+<p>Fleet campaigns use child QE workflows and bound requested concurrency to a
+maximum of five. Results remain attributable to individual targets rather than
+being collapsed into a single ambiguous fleet verdict. Workflow patch markers
+preserve replay compatibility as gates evolve; historical workflow executions
+should not be mistaken for runs of the latest policy.</p>
+<h2>1. Discover behavior before generating tests</h2>
+<p>For an agent target, discovery reads its Agent Card, skills, invocation
+contracts, version, and executable scenarios. The important question is not
+just “does an endpoint respond?” It is “what observable outcome does this
+particular skill promise, with what input and evaluation dimensions?”</p>
+<p>AQE distinguishes an executable scenario from missing requirements. When every
+discovered scenario needs a contract clarification, the workflow returns
+<code>REQUIREMENTS_NEEDED</code> with zero executed tests and does not generate a suite.
+It should not invent a payload, endpoint, or expected answer to fill the gap.
+When only some scenarios are executable, those can proceed while the missing
+requirements remain explicit.</p>
+<p>Optional GitHub grounding is a separate read-only boundary. The caller supplies
+an allowlisted repository and pinned source reference. Source analysis augments
+the generation request; it does not turn arbitrary repository access into an
+implicit authority to write or deploy code.</p>
+<h2>2. Generate an immutable candidate, not an automatic verdict</h2>
+<p>Generation combines supplied requirements, applicable agent ontology rules,
+scenario context, and product knowledge retrieved through Qdrant. Product RAG
+is optional: without an active product-knowledge artifact, generation can still
+use the declared scenario and ontology. Provenance should distinguish these
+cases instead of pretending every test has retrieved product evidence.</p>
+<p>The system also has a deterministic declared-contract compiler path for
+supported executable contracts. Not every candidate therefore needs to be
+invented by a model. The workflow records the generation method and uses it
+when deciding whether an Oracle-feedback regeneration is appropriate.</p>
+<p>Before a candidate consumes review or execution resources, the static gate
+checks its Python structure and testing policy. Tests should express atomic,
+observable outcomes, use fixtures for shared setup, map to required skills and
+dimensions, and avoid fixed sleeps, swallowed failures, or conditional assertion
+skipping. Browser tests favor role, label, and test-id locators with explicit
+state waits.</p>
+<p>Generated source is stored as an immutable artifact in RustFS, with the task and
+grounding metadata recorded in PostgreSQL. The artifact identity matters: review
+must refer to the candidate that will actually execute, not a mutable text box
+that can change after approval.</p>
+<h2>3. Use the Quality Oracle as a fail-closed review gate</h2>
+<p>The Quality Oracle reviews the candidate against requirements, ontology,
+retrieved evidence, skill coverage, and risk policy. It returns structured
+approval or rejection with issues and grounding citations. An unavailable or
+non-approving review does not silently authorize execution.</p>
+<p>For model-generated candidates, the current workflow permits one regeneration
+using structured Oracle feedback, then reviews the new candidate. A second
+rejection stops the workflow. The deterministic declared-contract path gets one
+review attempt rather than that model-feedback loop.</p>
+<p>There are two different mechanisms here: the AST gate checks structural rules;
+the Oracle reviews meaning. Neither proves the target's behavior. Even an
+independent reviewer can be wrong or share a blind spot with the generator, so
+actual execution remains necessary.</p>
+<h2>4. Execute in the correct runtime and read the real result</h2>
+<p>AQE separates browser-free HTTP, Agent Card, and A2A testing from website
+journeys. The agent executor does not need a Chromium installation. The website
+executor supplies Playwright Chromium in its own runtime. Requests are routed
+by test type, and an executor rejects a persisted task for the wrong mode.</p>
+<p>Before each execution, the runtime applies the static quality gate again. It
+writes the candidate into a temporary workspace, starts <code>python -m pytest</code>,
+captures stdout and stderr, and requests JUnit XML. Resource limits, a restricted
+environment, and a hard timeout bound the subprocess. Deployment-level
+permissions and network isolation remain part of the security boundary: a
+temporary directory alone is not a complete untrusted-code sandbox.</p>
+<p>The subprocess exit status determines execution success; JUnit supplies counts
+for passed, failed, errored, and skipped tests. AQE does not search console text
+for a reassuring word and call that a pass.</p>
+<p>This produces an important distinction for API consumers: <strong>Temporal
+<code>COMPLETED</code> means orchestration finished</strong>. Inspect <code>result.successful</code>, the
+failure/error counts, and the retained evidence before treating the run as a
+successful verification. A run can finish durably with a failed test result.</p>
+<h2>5. Repair is bounded, and a green rerun is not the whole story</h2>
+<p>Execution repair is separate from pre-execution Oracle feedback. When enabled
+and configured, the repair client receives the failing source and execution
+result. <code>MAX_REPAIR_ATTEMPTS</code> defaults to two repairs after the initial run.
+Repair can stop earlier when no model is configured, no candidate is returned,
+or an attempt succeeds. Every new candidate goes through the static gate and
+real execution again.</p>
+<p>The repair prompt explicitly forbids weakening, deleting, or changing the
+intended observable behavior. That is a policy, not a mathematical guarantee of
+semantic equivalence. The current execution loop does not repeat the full
+Quality Oracle review after each repair. Review the original and repaired
+artifacts and the expected outcome when the risk warrants it; “the model made
+the test green” is not sufficient evidence of correctness.</p>
+<p>An ordinary failing run is not automatically a product defect. It may expose a
+bad generated test, missing credentials, an unavailable dependency, an execution
+error, or a genuine assertion failure. Keeping these possibilities distinct is
+more useful than making every red result look like a discovered bug.</p>
+<h2>6. Separate operational evidence from the regression catalog</h2>
+<p>PostgreSQL and RustFS form the operational evidence layer. PostgreSQL keeps
+queryable run metadata, target identity, outcomes, and catalog links. RustFS
+keeps generated and repaired source and large artifacts. Failed and unpromoted
+candidates still have an evidence trail.</p>
+<p>GitHub is a narrower, reviewable publication boundary, enabled by catalog
+configuration and a scoped token:</p>
+<ul>
+<li><strong>Validated tests</strong> enter <code>generated-tests/</code> only after the execution quality
+  gate and pytest pass. Paths identify runtime, test layer, target agent, and
+  release version, with a source revision when supplied.</li>
+<li><strong>Confirmed defect reproducers</strong> enter <code>generated-findings/</code> only after
+  explicit confirmation with non-empty evidence. The confirmation endpoint
+  reruns the persisted test without repair and requires assertion failures with
+  zero execution or collection errors.</li>
+<li><strong>Test defects, environment failures, and untriaged results</strong> remain
+  operational evidence rather than being published as product defects.</li>
+</ul>
+<p>The generated-catalog workflow then continuously tests the identified target
+version. A confirmed-defect reproducer has a deliberately different expectation
+from a green regression test: it should continue to reproduce until the defect
+is fixed and its catalog disposition is updated. CI also needs network access
+to the target; private endpoints may require a properly scoped self-hosted
+runner. Sensitive scenarios belong in a private catalog.</p>
+<p>Passing execution and successful publication are distinct outcomes. A run can
+pass while catalog credentials are absent or a GitHub write fails; inspect
+<code>test_catalog</code> and <code>test_catalog_error</code> instead of assuming a green runtime
+result created a repository artifact.</p>
+<h2>Observe the handoffs without confusing telemetry with truth</h2>
+<p>AQE's Observe view connects directed agent handoffs, generated test nodes,
+target relationships, and final states, with separate graph and 3D views. The
+Temporal history explains the durable sequence; PostgreSQL and object artifacts
+explain what was tested and what happened.</p>
+<p>Graph-event delivery is best-effort. The implementation catches telemetry
+delivery errors so the live graph does not become a workflow dependency. A
+missing animation is not itself a failed test, just as a healthy dashboard
+badge is not itself a passing one.</p>
+<p>The wider agent fleet includes capture, change detection, knowledge ingestion,
+source analysis, artifact management, and diagnostics. Experimental agent and
+dbt builders produce review-required artifacts, not automatically deployed
+services. They should not be conflated with the verified-test publication path.</p>
+<h2>Run it and inspect your own evidence</h2>
+<p>The repository's local entry point is Docker Compose:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sqe/AQE.git
+<span class="nb">cd</span><span class="w"> </span>AQE
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+
+<p>Open the dashboard on port 3000, the workflow API documentation on port 8008,
+and Temporal UI on port 8233. Configure an appropriate model provider before
+requesting model-generated tests, and use only targets you are authorized to
+exercise. The dashboard provides agent and website examples; deployment and
+provider configuration are documented in the repository.</p>
+<p>For a meaningful result, retain the workflow ID, task ID, target version,
+review evidence, source artifacts, JUnit summary, repair attempts, and any
+catalog URL. Source checks, the architecture diagram, and a demo recording are
+useful references, but none replaces executing the scenario in your own
+environment. No throughput, availability, or cost benchmark is claimed here.</p>
+<p><strong>Explore the implementation:</strong>
+<a href="https://github.com/sqe/AQE">Repository</a> ·
+<a href="https://youtu.be/A5VcteEc_jE">Full execution demo</a> ·
+<a href="https://github.com/sqe/AQE/blob/main/docs/architecture.md">Architecture and operating rules</a> ·
+<a href="https://github.com/sqe/AQE/blob/main/docs/testing-agents.md">Agent testing runbook</a> ·
+<a href="https://github.com/sqe/AQE/blob/main/temporal_worker/workflow.py">Durable workflow</a> ·
+<a href="https://github.com/sqe/AQE/blob/main/agents/test_execution/app.py">Execution and repair</a></p>
     <div class="project-tags" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #f0f0f0;">
         <span class="tag">agentic</span>
         <span class="tag">quality engineering</span>
         <span class="tag">ai</span>
         <span class="tag">testing</span>
-        <span class="tag">mlops</span>
+        <span class="tag">temporal</span>
+        <span class="tag">rag</span>
+        <span class="tag">playwright</span>
+        <span class="tag">kubernetes</span>
     </div>
 </article>
 <div style="margin-top: 3rem; text-align: center;">
